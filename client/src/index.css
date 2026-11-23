@@ -39,3 +39,5 @@
 @media(prefers-reduced-motion:reduce){.journey-explore-toggle svg{transition:none}}
 
 .visual-caption strong{font-family:var(--font-thuluth);font-weight:700}.dialogue-panel>p{font-family:var(--font-thuluth)}
+.journey-branch-note{display:flex;align-items:flex-start;gap:9px;padding:11px 13px;background:#fcfaf4;border-right:2px solid #cfb783;color:#6a705e;font-size:11px;line-height:1.85}
+.journey-branch-note svg{flex:0 0 auto;margin-top:2px;color:#a98d5e}

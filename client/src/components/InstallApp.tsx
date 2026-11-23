@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Download, X } from "lucide-react";
 
 type InstallChoiceEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: "accepted" | "dismissed" }> };
@@ -8,6 +8,7 @@ export default function InstallApp() {
   const [installed, setInstalled] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const dialogRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const onPrompt = (event: Event) => {
@@ -21,6 +22,24 @@ export default function InstallApp() {
     window.addEventListener("appinstalled", onInstalled);
     return () => { window.removeEventListener("beforeinstallprompt", onPrompt); window.removeEventListener("appinstalled", onInstalled); };
   }, []);
+
+  useEffect(() => {
+    if (!showHelp) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const dialog = dialogRef.current;
+    const controls = () => Array.from(dialog?.querySelectorAll<HTMLButtonElement>("button:not(:disabled)") ?? []);
+    controls()[0]?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") { event.preventDefault(); setShowHelp(false); return; }
+      if (event.key !== "Tab") return;
+      const items = controls();
+      if (items.length < 2) return;
+      if (event.shiftKey && document.activeElement === items[0]) { event.preventDefault(); items.at(-1)?.focus(); }
+      else if (!event.shiftKey && document.activeElement === items.at(-1)) { event.preventDefault(); items[0].focus(); }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => { document.removeEventListener("keydown", onKeyDown); previous?.focus(); };
+  }, [showHelp]);
 
   if (installed || hidden) return null;
   const install = async () => {
@@ -37,7 +56,7 @@ export default function InstallApp() {
       <button className="install-app__close" type="button" aria-label="إخفاء التلميح" onClick={() => setHidden(true)}><X size={16}/></button>
     </aside>
     {showHelp && <div className="install-dialog-backdrop" role="presentation" onClick={() => setShowHelp(false)}>
-      <section className="install-dialog" role="dialog" aria-modal="true" aria-labelledby="install-title" onClick={event => event.stopPropagation()}>
+      <section ref={dialogRef} className="install-dialog" role="dialog" aria-modal="true" aria-labelledby="install-title" onClick={event => event.stopPropagation()}>
         <button type="button" className="install-dialog__close" aria-label="إغلاق" onClick={() => setShowHelp(false)}><X size={18}/></button>
         <span className="install-dialog__eyebrow">نسخة الويب على جهازك</span>
         <h2 id="install-title">افتح صالِحنا كتطبيق</h2>
