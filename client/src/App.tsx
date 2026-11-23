@@ -1,6 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import SiteHeader from "@/components/SiteHeader";
+import InstallApp from "@/components/InstallApp";
 import NotFound from "@/pages/NotFound";
 import Home from "@/pages/Home";
 import Journey from "@/pages/Journey";
@@ -26,5 +27,5 @@ function Router() {
   </Switch>;
 }
 export default function App() {
-  return <ErrorBoundary><ThemeProvider defaultTheme="light"><TooltipProvider><SiteHeader/><Router/><Toaster/></TooltipProvider></ThemeProvider></ErrorBoundary>;
+  return <ErrorBoundary><ThemeProvider defaultTheme="light"><TooltipProvider><SiteHeader/><Router/><InstallApp/><Toaster/></TooltipProvider></ThemeProvider></ErrorBoundary>;
 }

@@ -1,0 +1,19 @@
+{
+  "id": "/",
+  "name": "صالِحنا | مساحة للإصلاح والتفاهم",
+  "short_name": "صالِحنا",
+  "description": "مساحة مهنية لترتيب الخلاف وفهم المصالح واستكشاف التفاهم.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "theme_color": "#103a30",
+  "background_color": "#f8f7f1",
+  "icons": [
+    { "src": "/salihna-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/salihna-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
