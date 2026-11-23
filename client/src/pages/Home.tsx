@@ -1,6 +1,5 @@
 import { Link } from "wouter";
 import {
-  ArrowDownLeft,
   ArrowLeft,
   ArrowUpLeft,
   Building2,
@@ -73,11 +72,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="limits-section">
-        <div className="shell limits-section__inner"><div><span className="section-kicker"><span>ثقة وسلامة</span> حدود نلتزم بها</span><h2>التفاهم مهم؛<br /><em>لكن سلامتك أولًا.</em></h2></div><div className="limits-grid"><div><ShieldCheck size={19} /><h3>السلامة تسبق الصلح</h3><p>عند الخطر أو الإكراه، قد لا تكون الوساطة مناسبة. أوقف الرحلة واطلب دعمًا محليًا موثوقًا.</p></div><div><LockKeyhole size={19} /><h3>الخصوصية ليست وعدًا مطلقًا</h3><p>الملف لا يُشارك تلقائيًا؛ حفظه يتطلب حسابًا وموافقة. راجع صفحة الثقة لمعرفة ما يُحفظ.</p></div><div><ArrowDownLeft size={19} /><h3>مسودتك لا تمثل الطرفين</h3><p>ما تنتجه الأداة تأمل منظّم من إجاباتك وحدك، لا وساطة أو حكمًا أو ضمانًا للتفاهم.</p></div></div><Link href="/trust" className="limits-link">اقرأ تفاصيل الثقة والسلامة <ArrowLeft size={16} /></Link></div>
-      </section>
-
-      <footer className="new-footer"><div className="shell new-footer__grid"><div className="new-footer__brand"><Brand /><p>أداة عربية لتهيئة الأطراف لفهم الخلاف واستكشاف خيارات التفاهم.</p></div><div><h4>استكشف</h4><a href="/#paths">اختر نوع الخلاف</a></div><div><h4>حسابك</h4><Link href="/cases">ملفاتي</Link></div><div className="new-footer__safety"><ShieldCheck size={20} /><h4>السلامة والخصوصية</h4><p>عند خطر فوري، تواصل مع خدمات الطوارئ أو جهة حماية في بلدك. هذه المنصة ليست خدمة طوارئ أو جهة قضائية.</p><Link href="/trust">اعرف حدود الأداة</Link></div></div><div className="shell new-footer__base"><span>© صالِحنا</span><span>لا نتحقق من الوقائع، ولا نضمن اتفاقًا أو نتيجة.</span></div></footer>
+      <footer className="new-footer"><div className="shell new-footer__grid"><div className="new-footer__brand"><Brand /><p>أداة عربية لتهيئة الأطراف لفهم الخلاف واستكشاف خيارات التفاهم.</p></div><div><h4>استكشف</h4><a href="/#paths">اختر نوع الخلاف</a></div><div><h4>حسابك</h4><Link href="/cases">ملفاتي</Link></div><div className="new-footer__safety"><ShieldCheck size={17} /><h4>استخدام مسؤول</h4><p>ليست وساطة أو استشارة؛ وعند الخطر الفوري تواصل مع جهة الطوارئ المحلية.</p><Link href="/trust">الخصوصية والحدود</Link></div></div><div className="shell new-footer__base"><span>© صالِحنا</span><span>لا نتحقق من الوقائع، ولا نضمن اتفاقًا أو نتيجة.</span></div></footer>
     </main>
   );
 }

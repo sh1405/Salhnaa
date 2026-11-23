@@ -26,7 +26,7 @@ button, input, textarea, select { font-family: inherit; }
 .site-header { z-index: 50; height: 76px; background: rgb(247 245 240 / 96%); border-bottom: 1px solid rgb(27 26 53 / 10%); color: var(--s-ink); backdrop-filter: blur(16px); }
 .header-inner { height: 100%; }
 .brand { gap: 10px; color: var(--s-ink); }
-.brand-logo-image { width: 58px; height: 58px; display: block; flex: 0 0 auto; object-fit: contain; border: 1px solid rgb(27 26 53 / 9%); border-radius: 8px; background: #fffefa; }
+.brand-logo-image { width: 62px; height: 62px; display: block; flex: 0 0 auto; object-fit: contain; border: 1px solid var(--s-line); border-radius: 8px; background: var(--s-paper); box-shadow: 0 3px 10px rgb(27 26 53 / 6%); }
 .brand-mark { width: 45px; height: 45px; display: grid; place-items: center; border: 1px solid rgb(70 86 232 / 18%); background: #fffefa; border-radius: 14px 5px 14px 5px; box-shadow: 0 4px 14px rgb(27 26 53 / 7%); }
 .brand-mark svg { width: 36px; height: 36px; }
 .brand-type strong { color: var(--s-ink); font: 800 25px/1.15 var(--s-display); letter-spacing: -.04em; }
@@ -169,20 +169,6 @@ button, input, textarea, select { font-family: inherit; }
 .business-band__divider { width: 37px; height: 3px; background: var(--s-coral); }
 .business-band__aside small { color: #777585; font-size: 9px; line-height: 1.8; }
 
-.limits-section { padding-block: 91px 86px; background: var(--s-paper); }
-.limits-section__inner { display: grid; grid-template-columns: .7fr 1.3fr; align-items: start; column-gap: 65px; row-gap: 25px; }
-.limits-section h2 { margin-top: 14px; font-size: clamp(29px, 3.2vw, 40px); }
-.limits-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; }
-.limits-grid > div { padding: 15px 14px; border-top: 2px solid var(--s-blue); background: #fffefa; }
-.limits-grid > div:nth-child(2) { border-color: var(--s-citron); }
-.limits-grid > div:nth-child(3) { border-color: var(--s-coral); }
-.limits-grid svg { color: var(--s-blue); }
-.limits-grid > div:nth-child(2) svg { color: #ad8d16; }
-.limits-grid > div:nth-child(3) svg { color: #c35d4b; }
-.limits-grid h3 { margin: 11px 0 6px; color: var(--s-ink); font: 650 12px var(--s-display); }
-.limits-grid p { margin: 0; color: #777585; font-size: 10px; line-height: 1.9; }
-.limits-link { grid-column: 2; display: inline-flex; align-items: center; gap: 8px; color: #414ac9; font-size: 10px; font-weight: 700; }
-
 .last-step { padding-block: 64px; background: #24233f; color: white; }
 .last-step__inner { display: flex; justify-content: space-between; align-items: center; gap: 30px; }
 .last-step h2 { margin: 10px 0; color: #fff; font: 650 clamp(29px, 3.6vw, 43px)/1.6 var(--s-display); }
@@ -319,11 +305,6 @@ button, input, textarea, select { font-family: inherit; }
   .business-band__inner { grid-template-columns: 42px minmax(0,1fr); align-items: start; gap: 12px; }
   .business-band__copy h2 { font-size: 25px; }
   .business-band__aside { grid-column: 2; margin-top: 13px; padding-right: 15px; }
-  .limits-section { padding-block: 58px; }
-  .limits-grid { grid-template-columns: 1fr; gap: 10px; }
-  .limits-grid > div { display: grid; grid-template-columns: 24px 1fr; column-gap: 8px; padding: 12px; }
-  .limits-grid h3 { align-self: center; margin: 0; }
-  .limits-grid p { grid-column: 2; margin-top: 5px; }
   .last-step { padding-block: 43px; }
   .last-step__inner { display: block; }
   .last-step h2 { font-size: 31px; }
