@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { index, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -25,4 +25,17 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/** Private mediation files. A file is always owned by one authenticated user. */
+export const mediationCases = mysqlTable("mediationCases", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id),
+  kind: varchar("kind", { length: 100 }).notNull(),
+  country: varchar("country", { length: 100 }).notNull(),
+  safety: mysqlEnum("safety", ["safe", "danger", "unsure", "prefer_not"]).notNull(),
+  status: mysqlEnum("status", ["draft", "paused"]).notNull(),
+  responses: text("responses").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [index("mediation_cases_user_updated_idx").on(table.userId, table.updatedAt)]);
+
+export type MediationCase = typeof mediationCases.$inferSelect;

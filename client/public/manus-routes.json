@@ -1,0 +1,1 @@
+{"routes":[{"path":"/","title":"صالِحنا | لأن الصلح خير"},{"path":"/journey","title":"رحلة الصلح"},{"path":"/journey/:id","title":"مراجعة ملف الصلح"},{"path":"/cases","title":"ملفاتي"},{"path":"/dialogue","title":"أداة الحوار"},{"path":"/assistant","title":"مساعد صالِحنا"},{"path":"/trust","title":"الثقة والسلامة"}]}

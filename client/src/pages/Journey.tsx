@@ -1,0 +1,402 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useLocation } from "wouter";
+import {
+  ArrowLeft,
+  ArrowRight,
+  BriefcaseBusiness,
+  Building2,
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  CircleHelp,
+  ClipboardList,
+  Compass,
+  FileText,
+  GitMerge,
+  Globe2,
+  Landmark,
+  Layers3,
+  LoaderCircle,
+  LockKeyhole,
+  MessageCircle,
+  Network,
+  Pencil,
+  Scale,
+  ShieldAlert,
+  ShieldCheck,
+  Sparkles,
+  type LucideIcon,
+} from "lucide-react";
+import { startLogin } from "@/const";
+import { trpc } from "@/lib/trpc";
+import "./Journey.css";
+
+type Kind = "individual" | "family" | "community" | "business" | "workplace" | "organization" | "multi" | "international";
+type Safety = "safe" | "danger" | "unsure" | "prefer_not";
+type Responses = Record<string, string>;
+type Question = {
+  key: string;
+  label: string;
+  hint?: string;
+  placeholder?: string;
+  type?: "textarea" | "text" | "select";
+  required?: boolean;
+  options?: { value: string; label: string }[];
+};
+
+const kinds: { id: Kind; title: string; description: string; Icon: LucideIcon }[] = [
+  { id: "individual", title: "الأفراد", description: "خلاف شخصي أو مالي أو اجتماعي", Icon: MessageCircle },
+  { id: "family", title: "الأسرة والعائلة", description: "علاقات أسرية ومصالح مشتركة", Icon: GitMerge },
+  { id: "community", title: "المجتمع والقبائل", description: "خلاف مجتمعي أو بين مجموعات", Icon: Network },
+  { id: "business", title: "الأعمال والتجارة", description: "شراكات أو التزامات تجارية", Icon: BriefcaseBusiness },
+  { id: "workplace", title: "بيئة العمل", description: "خلافات مهنية أو في مكان العمل", Icon: Building2 },
+  { id: "organization", title: "المؤسسات والجهات", description: "خلاف تنظيمي أو بين جهات", Icon: Landmark },
+  { id: "multi", title: "متعدد الأطراف", description: "أكثر من طرف ومصالح متداخلة", Icon: Network },
+  { id: "international", title: "عابر للحدود", description: "أطراف أو اعتبارات في دول مختلفة", Icon: Globe2 },
+];
+
+const steps = [
+  { label: "نوع المسار", sub: "نقطة البداية" },
+  { label: "السلامة أولًا", sub: "قبل أن نكمل" },
+  { label: "مكان الخلاف", sub: "السياق المحلي" },
+  { label: "صورة الخلاف", sub: "ما الذي حدث؟" },
+  { label: "تفاصيل المسار", sub: "بما يناسب حالتك" },
+  { label: "الموقف والطلب", sub: "وجهة نظرك" },
+  { label: "ما يهمّك", sub: "المصالح والمخاوف" },
+  { label: "مساحة للحل", sub: "خيارات ممكنة" },
+  { label: "مراجعة الملف", sub: "قبل الحفظ" },
+];
+
+const safetyOptions: { value: Safety; title: string; description: string }[] = [
+  { value: "safe", title: "نعم، أشعر بالأمان", description: "لا يوجد تهديد مباشر أو ضغط يمنعني من المتابعة." },
+  { value: "danger", title: "هناك خطر أو تهديد", description: "أشعر بأن سلامتي أو سلامة شخص آخر قد تكون في خطر." },
+  { value: "unsure", title: "لست متأكدًا", description: "لا أستطيع تحديد ما إذا كان الوضع آمنًا الآن." },
+  { value: "prefer_not", title: "أفضل عدم الإجابة", description: "لا أرغب في الإجابة عن هذا السؤال." },
+];
+
+const procedureOptions = [
+  { value: "yes", label: "نعم" },
+  { value: "no", label: "لا" },
+  { value: "unsure", label: "لست متأكدًا" },
+];
+
+function questionsFor(kind: Kind | "", step: number, responses: Responses): Question[] {
+  if (step === 3) return [{
+    key: "facts", label: "ما الذي حدث من وجهة نظرك؟", hint: "اكتب وصفًا موجزًا لما تعرفه، دون أسماء أو بيانات تعريفية. هذه روايتك وليست حكمًا على الوقائع.", placeholder: "يمكنك البدء بما حدث ومتى بدأت المشكلة بصورة عامة...", required: true,
+  }];
+  if (step === 4) {
+    const representation: Question = {
+      key: "representation", label: "بأي صفة تتحدث هنا؟", hint: "وجودك ضمن مجموعة لا يعني أنك مفوّض للحديث باسمها.", type: "select",
+      options: [{ value: "self", label: "أتحدث عن نفسي" }, { value: "representative", label: "أمثل آخرين" }, { value: "unsure", label: "لم تتحدد الصفة بعد" }],
+    };
+    const authorization: Question = { key: "authorization", label: "ما حدود التفويض الذي لديك، إن وجد؟", hint: "اذكر حدود الصفة بشكل عام فقط، دون أسماء أو وثائق.", placeholder: "مثلًا: نطاق ما يمكنني مناقشته أو ما يحتاج إلى موافقة..." };
+    const process: Question = { key: "procedure", label: "هل توجد مهلة أو إجراءات قائمة قد تؤثر في هذا الخلاف؟", type: "select", options: procedureOptions };
+    const processDetail: Question = { key: "procedure_details", label: "ما الذي ينبغي أخذه في الاعتبار بشأنها؟", hint: "اذكر المهلة أو نوع الإجراء بصورة عامة، دون إرفاق مستندات.", placeholder: "اكتب ما تعرفه، إن رغبت..." };
+    switch (kind) {
+      case "individual": return [{ key: "relationship", label: "ما طبيعة العلاقة بين الأطراف؟", hint: "يكفي وصف عام؛ لا حاجة إلى ذكر أسماء.", placeholder: "مثلًا: علاقة شخصية أو مالية..." }];
+      case "family": return [{ key: "relationship", label: "ما طبيعة العلاقة أو الروابط التي تأثرت بالخلاف؟", hint: "يمكنك وصفها باختصار دون تحديد هويات الأشخاص.", placeholder: "صف العلاقة أو ما يهم الحفاظ عليه..." }];
+      case "community": return [representation, ...(responses.representation === "representative" ? [authorization] : []), { key: "community_context", label: "هل توجد اعتبارات مجتمعية تود الإشارة إليها؟", hint: "اذكر السياق أو العادات ذات الصلة دون افتراض أنها تحل محل الحقوق أو الأنظمة.", placeholder: "تفصيل عام، إن رغبت..." }];
+      case "business": return [{ key: "business_context", label: "ما طبيعة العلاقة أو الالتزام التجاري محل الخلاف؟", hint: "صِفها بشكل عام دون بيانات مالية حساسة أو مستندات.", placeholder: "مثلًا: شراكة أو توريد أو تقديم خدمة..." }, process, ...(responses.procedure === "yes" ? [processDetail] : [])];
+      case "workplace": return [{ key: "workplace_context", label: "ما السياق المهني للخلاف؟", hint: "صف طبيعة العلاقة أو أثر الخلاف في العمل دون تسمية أشخاص.", placeholder: "تفصيل عام عن بيئة العمل..." }, process, ...(responses.procedure === "yes" ? [processDetail] : [])];
+      case "organization": return [{ key: "organization_context", label: "ما طبيعة العلاقة بين الجهات أو الوحدات المعنية؟", hint: "تحدث بشكل عام دون أسماء جهات أو تفاصيل سرية.", placeholder: "مثلًا: تعاون أو اختصاصات أو التزام مشترك..." }, representation, ...(responses.representation === "representative" ? [authorization] : [])];
+      case "multi": return [{ key: "parties_context", label: "كيف تتداخل الأطراف أو المصالح؟", hint: "صف المجموعات بصورة عامة دون ذكر أسماء أو افتراض اتفاقها.", placeholder: "مثلًا: عدة مجموعات لها مصالح مختلفة..." }, representation, ...(responses.representation === "representative" ? [authorization] : [])];
+      case "international": return [{ key: "cross_border", label: "ما الدول أو السياقات الأخرى ذات الصلة؟", hint: "اكتفِ بذكر الدول أو وصف عام، دون عناوين أو مستندات.", placeholder: "اذكر الدول ذات الصلة إن عُرفت..." }, process, ...(responses.procedure === "yes" ? [processDetail] : [])];
+      default: return [];
+    }
+  }
+  if (step === 5) return [
+    { key: "position", label: "كيف ترى الخلاف أو تفسّره؟", hint: "يمكن أن تختلف التفسيرات بين الأطراف؛ اكتب وجهة نظرك كما تراها.", placeholder: "من وجهة نظري..." },
+    { key: "request", label: "ما الذي تطلبه أو تود الوصول إليه؟", placeholder: "ما طلبك الأساسي؟" },
+  ];
+  if (step === 6) return [
+    { key: "interests", label: "ما الأمور الأهم بالنسبة لك؟", hint: "فكّر في الاحتياجات أو المصالح وراء طلبك.", placeholder: "مثلًا: وضوح الالتزامات، الاحترام، أو الاستقرار..." },
+    { key: "concerns", label: "هل هناك مخاوف أو عوائق تود مراعاتها؟", placeholder: "ما الذي قد يجعل التقدم صعبًا؟" },
+  ];
+  if (step === 7) return [
+    { key: "solutions", label: "ما الخيارات التي قد تكون مستعدًا للنظر فيها؟", hint: "ليست هذه التزامات؛ مجرد أفكار أولية قابلة للتغيير.", placeholder: "اكتب أي احتمالات تراها مناسبة..." },
+    { key: "common_ground", label: "هل ترى مساحة اتفاق يمكن البناء عليها؟", placeholder: "يمكنك تركها فارغة إن لم تتضح بعد..." },
+  ];
+  return [];
+}
+
+const stageCopy = [
+  { eyebrow: "لنبدأ من هنا", title: "لكل خلاف سياقه الخاص", description: "اختر المسار الأقرب إلى طبيعة الخلاف، لنرتّب لك أسئلة تناسبه." },
+  { eyebrow: "خطوة مهمة", title: "سلامتك تأتي أولًا", description: "قبل الحديث عن الخلاف، نود التأكد من أنك تشعر بالأمان عند المتابعة." },
+  { eyebrow: "السياق المحلي", title: "أين يقع الخلاف؟", description: "يساعدنا تحديد الدولة على فهم السياق العام لملفك." },
+  { eyebrow: "الصورة الأولى", title: "ابدأ بما حدث", description: "خذ مساحتك في وصف ما تعرفه. لا نتحقق من صحة الرواية من طرف واحد." },
+  { eyebrow: "تفاصيل تناسب مسارك", title: "لنفهم السياق أكثر", description: "بضع تفاصيل اختيارية تساعدك على ترتيب الصورة، دون الحاجة لذكر هويات." },
+  { eyebrow: "من وجهة نظرك", title: "موقفك وما تطلبه", description: "افصل بين ما تراه في الخلاف وما ترغب في الوصول إليه." },
+  { eyebrow: "خلف الموقف", title: "ما الذي يهمّك حقًا؟", description: "المصالح والمخاوف قد تفتح مساحة لفهم ما يحتاج إلى مراعاة." },
+  { eyebrow: "التفكير في الممكن", title: "مساحة لخيارات جديدة", description: "لا تحتاج إلى امتلاك حل نهائي الآن؛ يمكنك تدوين أفكارك الأولية فقط." },
+  { eyebrow: "قبل الحفظ", title: "راجع ملفك على مهل", description: "هذه مسودة بروايتك أنت. يمكنك العودة لأي جزء وتعديله قبل الحفظ." },
+];
+
+const storageKey = "salihna-journey-login-draft-v1";
+const countries = ["السعودية", "الإمارات العربية المتحدة", "الكويت", "قطر", "البحرين", "عُمان", "الأردن", "مصر", "المغرب", "تونس", "الجزائر", "العراق", "لبنان", "فلسطين", "اليمن", "السودان", "تركيا", "المملكة المتحدة", "الولايات المتحدة"];
+
+function isKind(value: unknown): value is Kind {
+  return typeof value === "string" && kinds.some(item => item.id === value);
+}
+
+function QuestionField({ question, value, onChange }: { question: Question; value: string; onChange: (value: string) => void }) {
+  const fieldId = `journey-${question.key}`;
+  return (
+    <div className="journey-field">
+      <label htmlFor={fieldId} className="journey-field__label">{question.label} {question.required && <span className="journey-field__required">*</span>}</label>
+      {question.hint && <p className="journey-field__hint" id={`${fieldId}-hint`}>{question.hint}</p>}
+      {question.type === "select" ? (
+        <div className="journey-select-wrap">
+          <select id={fieldId} value={value} onChange={event => onChange(event.target.value)} aria-describedby={question.hint ? `${fieldId}-hint` : undefined}>
+            <option value="">اختر إجابة (اختياري)</option>
+            {question.options?.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+          </select>
+          <ChevronDown size={17} aria-hidden="true" />
+        </div>
+      ) : question.type === "text" ? (
+        <input id={fieldId} value={value} onChange={event => onChange(event.target.value)} placeholder={question.placeholder} maxLength={500} aria-describedby={question.hint ? `${fieldId}-hint` : undefined} />
+      ) : (
+        <textarea id={fieldId} value={value} onChange={event => onChange(event.target.value)} placeholder={question.placeholder} maxLength={3000} rows={4} aria-required={question.required || undefined} aria-describedby={question.hint ? `${fieldId}-hint` : undefined} />
+      )}
+    </div>
+  );
+}
+
+function displayAnswer(question: Question, value: string) {
+  if (!value?.trim()) return "لم تتم الإضافة";
+  return question.options?.find(option => option.value === value)?.label || value;
+}
+
+export default function Journey() {
+  const [location] = useLocation();
+  const idPart = location.match(/^\/journey\/([^/]+)\/?$/)?.[1];
+  const numericId = idPart && /^\d+$/.test(idPart) ? Number(idPart) : null;
+  const caseId = numericId && Number.isSafeInteger(numericId) && numericId > 0 ? numericId : null;
+  const invalidId = Boolean(idPart && !caseId);
+  const initialKind = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("kind") : null;
+  const [kind, setKind] = useState<Kind | "">(isKind(initialKind) ? initialKind : "");
+  const [safety, setSafety] = useState<Safety | "">("");
+  const [country, setCountry] = useState("");
+  const [responses, setResponses] = useState<Responses>({});
+  const [step, setStep] = useState(0);
+  const [consent, setConsent] = useState(false);
+  const [keepForLogin, setKeepForLogin] = useState(false);
+  const [notice, setNotice] = useState("");
+  const [error, setError] = useState("");
+  const [saved, setSaved] = useState(false);
+  const [storageCleanupError, setStorageCleanupError] = useState(false);
+  const [loadedStatus, setLoadedStatus] = useState<"draft" | "paused">("draft");
+  const [notEditable, setNotEditable] = useState(false);
+  const [loadedId, setLoadedId] = useState<number | null>(null);
+  const restored = useRef(false);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  const utils = trpc.useUtils();
+  const auth = trpc.auth.me.useQuery(undefined, { retry: false, refetchOnWindowFocus: false });
+  const caseQuery = trpc.cases.get.useQuery({ id: caseId ?? 0 }, { enabled: Boolean(caseId && auth.data), retry: false, refetchOnMount: "always", refetchOnWindowFocus: false });
+  const createCase = trpc.cases.create.useMutation();
+  const updateCase = trpc.cases.update.useMutation();
+  const isAuthenticated = Boolean(auth.data);
+
+  useEffect(() => {
+    setLoadedId(null);
+    setSaved(false);
+  }, [caseId]);
+
+  useEffect(() => {
+    // Cached data is not safe to edit until the fresh fetch has succeeded.
+    if (!caseId || !isAuthenticated || !caseQuery.isFetchedAfterMount || caseQuery.isFetching || caseQuery.isError || !caseQuery.data || loadedId === caseId) return;
+    const data = caseQuery.data;
+    setLoadedId(caseId);
+    if (!isKind(data.kind)) {
+      setNotEditable(true);
+      return;
+    }
+    setKind(data.kind);
+    setCountry(data.country || "");
+    setSafety(data.safety);
+    setResponses(data.responses || {});
+    const editable = data.status === "draft" || data.status === "paused";
+    setNotEditable(!editable);
+    if (editable) setLoadedStatus(data.status);
+    setStep(data.safety === "safe" ? 8 : 1);
+  }, [caseId, isAuthenticated, loadedId, caseQuery.data, caseQuery.isFetchedAfterMount, caseQuery.isFetching, caseQuery.isError]);
+
+  useEffect(() => {
+    if (caseId || !isAuthenticated || restored.current) return;
+    restored.current = true;
+    try {
+      const raw = sessionStorage.getItem(storageKey);
+      if (!raw) return;
+      const data: unknown = JSON.parse(raw);
+      if (!data || typeof data !== "object") return;
+      const draft = data as { kind?: unknown; country?: unknown; safety?: unknown; responses?: unknown };
+      if (!isKind(draft.kind) || draft.safety !== "safe" || typeof draft.country !== "string" || !draft.responses || typeof draft.responses !== "object" || Array.isArray(draft.responses)) return;
+      const restoredResponses = Object.fromEntries(Object.entries(draft.responses).filter((entry): entry is [string, string] => typeof entry[1] === "string"));
+      setKind(draft.kind);
+      setCountry(draft.country);
+      setSafety("safe");
+      setResponses(restoredResponses);
+      setStep(8);
+      setNotice("استعدنا النسخة المؤقتة من هذا الجهاز. راجعها ثم أكّد موافقتك لحفظها في حسابك.");
+    } catch {
+      // Storage may be unavailable; the journey remains usable without it.
+    }
+  }, [caseId, isAuthenticated]);
+
+  const selectedKind = kinds.find(item => item.id === kind);
+  const blocked = Boolean(safety && safety !== "safe");
+  const allQuestions = useMemo(() => [3, 4, 5, 6, 7].flatMap(index => questionsFor(kind, index, responses)), [kind, responses]);
+  const currentQuestions = questionsFor(kind, step, responses);
+  const busy = createCase.isPending || updateCase.isPending;
+
+  function goTo(next: number) {
+    setError("");
+    if (next !== 8) setConsent(false);
+    setStep(next);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.setTimeout(() => headingRef.current?.focus({ preventScroll: true }), 80);
+  }
+
+  function next() {
+    if (step === 0 && !kind) return setError("اختر المسار الأقرب إلى طبيعة الخلاف للمتابعة.");
+    if (step === 1 && safety !== "safe") return setError("اختر إجابة عن السلامة أولًا.");
+    if (step === 2 && country.trim().length < 2) return setError("يرجى كتابة اسم الدولة بصورة واضحة.");
+    if (step === 3 && !responses.facts?.trim()) return setError("أضف وصفًا موجزًا من وجهة نظرك قبل المتابعة.");
+    goTo(Math.min(step + 1, 8));
+  }
+
+  function changeResponse(key: string, value: string) {
+    setError("");
+    setResponses(previous => ({ ...previous, [key]: value }));
+  }
+
+  function activeResponses() {
+    const filtered: Responses = {};
+    for (const question of allQuestions) {
+      const value = responses[question.key]?.trim();
+      if (value) filtered[question.key] = value;
+    }
+    return filtered;
+  }
+
+  function handleLogin() {
+    setError("");
+    try {
+      if (keepForLogin) {
+        sessionStorage.setItem(storageKey, JSON.stringify({ kind, country, safety, responses: activeResponses() }));
+      } else {
+        try { sessionStorage.removeItem(storageKey); } catch { /* Login does not depend on optional storage. */ }
+      }
+      startLogin();
+    } catch {
+      setError("تعذّر بدء تسجيل الدخول أو حفظ النسخة المؤقتة. تحقّق من إعدادات المتصفح وحاول مجددًا.");
+    }
+  }
+
+  async function save() {
+    setError("");
+    if (!isAuthenticated) return setError("سجّل الدخول أولًا لحفظ الملف في حسابك.");
+    if (!consent) return setError("يرجى تأكيد موافقتك على حفظ الملف قبل المتابعة.");
+    if (!kind || safety !== "safe" || country.trim().length < 2 || !responses.facts?.trim()) return setError("تحقّق من المسار والسلامة والدولة ووصف الخلاف قبل الحفظ.");
+    const filteredResponses = activeResponses();
+    if (new TextEncoder().encode(JSON.stringify(filteredResponses)).length > 60000) return setError("الإجابات طويلة جدًا للحفظ. يرجى اختصار بعضها ثم المحاولة مجددًا.");
+    let savedId: number;
+    try {
+      const data = { kind, safety: "safe" as const, country: country.trim(), responses: filteredResponses };
+      if (caseId) {
+        await updateCase.mutateAsync({ id: caseId, ...data, status: loadedStatus });
+        savedId = caseId;
+      } else {
+        savedId = (await createCase.mutateAsync(data)).id;
+      }
+    } catch {
+      setError("تعذّر حفظ الملف الآن. لم نتأكد من اكتمال الحفظ؛ تحقّق من اتصالك وحاول مرة أخرى.");
+      return;
+    }
+    // Mark both caches stale without refetching the open editor or conflating a
+    // cache refresh failure with a failed (and potentially duplicated) save.
+    void Promise.allSettled([
+      utils.cases.list.invalidate(undefined, { refetchType: "none" }),
+      utils.cases.get.invalidate({ id: savedId }, { refetchType: "none" }),
+    ]);
+    try { sessionStorage.removeItem(storageKey); } catch { setStorageCleanupError(true); }
+    setSaved(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  const awaitingCase = loadedId !== caseId || !caseQuery.isFetchedAfterMount;
+  const caseLoadFailed = isAuthenticated && !caseQuery.isFetching && (caseQuery.isError || (caseQuery.isPaused && awaitingCase));
+  const isLoadingCase = Boolean(caseId && (auth.isLoading || (isAuthenticated && awaitingCase && !caseLoadFailed)));
+  const cannotLoad = Boolean(invalidId || (caseId && caseLoadFailed));
+
+  return (
+    <div className="journey" dir="rtl" lang="ar">
+      <main className="journey-main">
+        <div className="journey-topline"><Link href="/">الرئيسية</Link><span>/</span><span>رحلة إنشاء ملف</span></div>
+        {isLoadingCase ? (
+          <div className="journey-state"><LoaderCircle className="journey-spin" size={30} /><h1>جارٍ فتح الملف</h1><p>لحظة من فضلك.</p></div>
+        ) : cannotLoad ? (
+          <div className="journey-state"><CircleHelp size={32} /><h1>تعذّر فتح هذا الملف</h1><p>قد يكون الملف غير متاح أو لا تملك صلاحية الوصول إليه.</p><Link className="journey-button journey-button--primary" href="/cases">العودة إلى ملفاتي <ArrowLeft size={17} /></Link></div>
+        ) : caseId && !isAuthenticated ? (
+          <div className="journey-state"><LockKeyhole size={32} /><h1>سجّل دخولك لفتح الملف</h1><p>الملفات مرتبطة بالحساب الذي أنشأها. بعد تسجيل الدخول ستعود إلى الصفحة الرئيسية؛ افتح رابط الملف مرة أخرى.</p>{error && <p className="journey-error" role="alert">{error}</p>}<button className="journey-button journey-button--primary" onClick={handleLogin} type="button">تسجيل الدخول <ArrowLeft size={17} /></button></div>
+        ) : notEditable ? (
+          <div className="journey-state"><FileText size={32} /><h1>هذا الملف غير متاح للتعديل هنا</h1><p>يمكنك العودة إلى قائمة ملفاتك للاطلاع على حالته.</p><Link className="journey-button journey-button--primary" href="/cases">العودة إلى ملفاتي <ArrowLeft size={17} /></Link></div>
+        ) : saved ? (
+          <div className="journey-state journey-state--success"><span className="journey-success-icon"><CheckCircle2 size={32} /></span><span className="journey-eyebrow">خطوة موفقة</span><h1>تم حفظ ملفك</h1><p>{caseId ? "حُفظت تعديلاتك في حسابك." : "حُفظت مسودتك في حسابك."} لم تُرسل دعوة إلى أي طرف ولم تتم مشاركة الملف عند الحفظ.</p>{storageCleanupError && <p className="journey-error" role="alert">تعذّر مسح النسخة المؤقتة من المتصفح؛ يرجى مسح بيانات الموقع على هذا الجهاز.</p>}<Link className="journey-button journey-button--primary" href="/cases">الذهاب إلى ملفاتي <ArrowLeft size={17} /></Link></div>
+        ) : (
+          <div className="journey-layout">
+            <aside className="journey-sidebar" aria-label="مراحل الرحلة">
+              <div className="journey-sidebar__intro"><span className="journey-sidebar__kicker"><Sparkles size={14} /> رحلة الصلح</span><h2>خطوة نحو<br /><em>مساحة تفاهم.</em></h2><p>مساحة ترتّب فيها أفكارك، بالوتيرة التي تناسبك.</p></div>
+              <div className="journey-sidebar__rule" />
+              <ol className="journey-steps">
+                {steps.map((item, index) => <li key={item.label} className={`${index === step ? "is-current" : ""} ${index < step ? "is-complete" : ""}`} aria-current={index === step ? "step" : undefined}><span className="journey-steps__number">{index < step ? <Check size={13} /> : String(index + 1).padStart(2, "0")}</span><span><strong>{item.label}</strong><small>{item.sub}</small></span></li>)}
+              </ol>
+              <div className="journey-sidebar__bottom"><span className="journey-sidebar__bottom-icon"><LockKeyhole size={17} /></span><p><strong>ابدأ بما ترتاح لمشاركته</strong><br />لا نطلب أسماء أو مستندات.</p></div>
+              <span className="journey-sidebar__ornament" aria-hidden="true" />
+            </aside>
+
+            <section className="journey-content" aria-labelledby="journey-title">
+              <div className="journey-progress-row"><span>رحلتك إلى الصلح</span><span>الخطوة {String(step + 1).padStart(2, "0")} <i>/</i> {String(steps.length).padStart(2, "0")}</span></div>
+              <div className="journey-progress" role="progressbar" aria-label="تقدم الرحلة" aria-valuemin={1} aria-valuemax={steps.length} aria-valuenow={step + 1}><span style={{ width: `${((step + 1) / steps.length) * 100}%` }} /></div>
+              <div className="journey-content__body">
+                {blocked ? (
+                  <div className="journey-stop" role="status">
+                    <span className="journey-stop__icon"><ShieldAlert size={25} /></span>
+                    <span className="journey-eyebrow">سلامتك هي الأولوية</span>
+                    <h1 id="journey-title" tabIndex={-1} ref={headingRef}>لنتوقف هنا الآن</h1>
+                    <p>عندما يكون هناك خطر، أو لا تكون متأكدًا من الأمان، أو تفضّل عدم الإجابة، لا تتابع إعداد رواية النزاع أو مسار الوساطة هنا.</p>
+                    <div className="journey-stop__guidance"><strong>ما الذي يمكنك فعله؟</strong><p>إذا كان الخطر مباشرًا، انتقل إلى مكان آمن إن أمكن واتصل بخدمات الطوارئ المحلية. يمكنك أيضًا طلب المساعدة من شخص موثوق أو جهة حماية مختصة في بلدك عندما يكون ذلك آمنًا.</p><p>هذه إرشادات عامة وليست خدمة طوارئ؛ لن يؤدي اختيارك إلى تواصل أو مراجعة من فريق.</p></div>
+                    {storageCleanupError && <p className="journey-error" role="alert">تعذّر مسح النسخة المؤقتة من المتصفح؛ يمكنك مسح بيانات الموقع على هذا الجهاز عندما يكون ذلك آمنًا.</p>}
+                    <button className="journey-button journey-button--secondary" type="button" onClick={() => { setSafety(""); goTo(1); }}><ArrowRight size={17} /> العودة</button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="journey-heading"><span className="journey-eyebrow"><span /> {stageCopy[step].eyebrow}</span><h1 id="journey-title" tabIndex={-1} ref={headingRef}>{stageCopy[step].title}</h1><p>{stageCopy[step].description}</p></div>
+                    {notice && <div className="journey-notice" role="status"><CheckCircle2 size={18} />{notice}</div>}
+                    {step === 0 && <div className="journey-soft-note"><ShieldCheck size={18} /><span>هذه نواة تأسيسية؛ تجنّب إدخال بيانات حساسة قبل اكتمال المراجعة الأمنية والقانونية. <Link href="/trust">اقرأ عن الثقة والسلامة</Link>.</span></div>}
+                    {step === 0 && <div className="journey-kind-grid" role="group" aria-label="اختر نوع المسار">{kinds.map(({ id, title, description, Icon }) => <button type="button" aria-pressed={kind === id} key={id} className={`journey-kind ${kind === id ? "is-selected" : ""}`} onClick={() => { setKind(id); setError(""); }}><span className="journey-kind__icon"><Icon size={21} strokeWidth={1.6} /></span><span className="journey-kind__copy"><strong>{title}</strong><small>{description}</small></span><span className="journey-choice-dot">{kind === id && <Check size={12} />}</span></button>)}</div>}
+                    {step === 1 && <div className="journey-safety-list" role="group" aria-label="هل تشعر بالأمان للمتابعة؟">{safetyOptions.map(option => <button key={option.value} className={`journey-safety-option ${safety === option.value ? "is-selected" : ""}`} type="button" aria-pressed={safety === option.value} onClick={() => { setSafety(option.value); setError(""); if (option.value !== "safe") { setConsent(false); setNotice(""); setStorageCleanupError(false); try { sessionStorage.removeItem(storageKey); } catch { setStorageCleanupError(true); } } }}><span className="journey-choice-dot">{safety === option.value && <Check size={12} />}</span><span><strong>{option.title}</strong><small>{option.description}</small></span></button>)}<div className="journey-soft-note"><ShieldCheck size={18} /><span>إذا كان هناك تهديد أو إكراه، فقد لا تكون متابعة الوساطة مناسبة الآن.</span></div></div>}
+                    {step === 2 && <div className="journey-fields"><div className="journey-field"><label className="journey-field__label" htmlFor="journey-country">الدولة ذات الصلة بالخلاف <span className="journey-field__required">*</span></label><p className="journey-field__hint">اكتب اسم الدولة أو اختر من الاقتراحات.</p><input id="journey-country" list="journey-countries" value={country} maxLength={80} onChange={event => { setCountry(event.target.value); setError(""); }} placeholder="مثال: السعودية" autoComplete="country-name" /><datalist id="journey-countries">{countries.map(item => <option value={item} key={item} />)}</datalist></div><div className="journey-soft-note"><Globe2 size={18} /><span>تختلف الأنظمة والسياقات من بلد لآخر. هذه الرحلة لا تقدّم استشارة قانونية.</span></div></div>}
+                    {step >= 3 && step <= 7 && <div className="journey-fields">{currentQuestions.map(question => <QuestionField key={question.key} question={question} value={responses[question.key] || ""} onChange={value => changeResponse(question.key, value)} />)}<div className="journey-soft-note"><LockKeyhole size={18} /><span>يرجى تجنّب الأسماء وبيانات الهوية والتفاصيل الحساسة أو المستندات. الأسئلة غير المعلّمة بنجمة اختيارية.</span></div></div>}
+                    {step === 8 && <div className="journey-review">
+                      <div className="journey-review__section"><div className="journey-review__head"><div><span className="journey-review__icon"><Compass size={18} /></span><strong>أساس الملف</strong></div><button type="button" onClick={() => goTo(0)}><Pencil size={14} /> تعديل</button></div><div className="journey-review__pair"><span>المسار</span><strong>{selectedKind?.title}</strong></div><div className="journey-review__pair"><span>الدولة</span><strong>{country}</strong><button type="button" onClick={() => goTo(2)} aria-label="تعديل الدولة"><Pencil size={14} /></button></div><div className="journey-review__pair"><span>السلامة</span><strong>أشعر بالأمان للمتابعة</strong><button type="button" onClick={() => goTo(1)} aria-label="تعديل إجابة السلامة"><Pencil size={14} /></button></div></div>
+                      {[3, 4, 5, 6, 7].map(index => <div className="journey-review__section" key={index}><div className="journey-review__head"><div><span className="journey-review__icon">{index === 3 ? <FileText size={18} /> : index === 4 ? <ClipboardList size={18} /> : index === 5 ? <Scale size={18} /> : index === 6 ? <Layers3 size={18} /> : <GitMerge size={18} />}</span><strong>{steps[index].label}</strong></div><button type="button" onClick={() => goTo(index)}><Pencil size={14} /> تعديل</button></div>{questionsFor(kind, index, responses).map(question => <div className="journey-review__answer" key={question.key}><span>{question.label}</span><p className={!responses[question.key]?.trim() ? "is-empty" : ""}>{displayAnswer(question, responses[question.key] || "")}</p></div>)}</div>)}
+                      <div className="journey-consent"><label><input type="checkbox" checked={consent} onChange={event => { setConsent(event.target.checked); setError(""); }} /><span>أوافق على حفظ هذه المعلومات في ملف مرتبط بحسابي.</span></label><p>الحفظ لا يشارك الملف مع الأطراف الأخرى، ولا يرسل دعوات. يمكنك مراجعة الملف من صفحة «ملفاتي».</p></div>
+                      {!isAuthenticated && <div className="journey-login"><div className="journey-login__title"><LockKeyhole size={18} /><strong>تسجيل الدخول مطلوب للحفظ</strong></div><p>بعد تسجيل الدخول ستعود إلى الصفحة الرئيسية؛ افتح رحلة إنشاء الملف مجددًا. لن يُحفظ الملف في حسابك تلقائيًا، وستحتاج إلى مراجعته وتأكيد الحفظ.</p><label><input type="checkbox" checked={keepForLogin} onChange={event => setKeepForLogin(event.target.checked)} /><span>أوافق على حفظ نسخة مؤقتة من إجاباتي في متصفح هذا الجهاز خلال الجلسة لاستعادتها بعد الدخول. تُحذف بعد الحفظ، وقد يطّلع عليها مستخدم الجهاز.</span></label><p>دون هذا الخيار ستفقد الإجابات عند الانتقال لتسجيل الدخول.</p></div>}
+                    </div>}
+                    {error && <div className="journey-error" role="alert">{error}</div>}
+                    <div className="journey-actions">
+                      {step > 0 ? <button type="button" className="journey-button journey-button--back" onClick={() => goTo(step - 1)} disabled={busy}><ArrowRight size={17} /> السابق</button> : <span className="journey-actions__hint"><span /> خطوة واحدة في كل مرة</span>}
+                      {step < 8 ? <button type="button" className="journey-button journey-button--primary" onClick={next}>متابعة <ArrowLeft size={17} /></button> : isAuthenticated ? <button type="button" className="journey-button journey-button--primary" disabled={busy || !consent} onClick={save}>{busy ? <><LoaderCircle className="journey-spin" size={17} /> جارٍ الحفظ</> : <>{caseId ? "حفظ التعديلات" : "حفظ الملف"} <ArrowLeft size={17} /></>}</button> : <button type="button" className="journey-button journey-button--primary" onClick={handleLogin}>تسجيل الدخول <ArrowLeft size={17} /></button>}
+                    </div>
+                  </>
+                )}
+              </div>
+            </section>
+          </div>
+        )}
+        <footer className="journey-footer"><span>صالِحنا <i>•</i> لأن الصلح خير</span><span>كل خطوة تبدأ بالاستماع.</span></footer>
+      </main>
+    </div>
+  );
+}
