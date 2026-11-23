@@ -1,7 +1,7 @@
 .cases-page {
-  --cases-green: #0d3029;
-  --cases-ivory: #f8f7f1;
-  --cases-gold: #c7aa71;
+  --cases-green: #1b1a35;
+  --cases-ivory: #f7f5f0;
+  --cases-gold: #f57561;
   min-height: calc(100vh - 72px);
   background: var(--cases-ivory);
   color: var(--cases-green);
@@ -30,7 +30,7 @@
   opacity: 0.65;
 }
 .cases-page :focus-visible {
-  outline: 3px solid #bf9d5f;
+  outline: 3px solid #d5614d;
   outline-offset: 3px;
 }
 .cases-shell {
@@ -42,15 +42,15 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #7d8980;
+  color: #33324f;
   font-size: 12px;
   font-weight: 500;
 }
 .cases-breadcrumb span:last-child {
-  color: #3c5a50;
+  color: #33324f;
 }
 .cases-breadcrumb-divider {
-  color: #c0c9c0;
+  color: #d8d7e9;
 }
 .cases-heading {
   display: flex;
@@ -58,7 +58,7 @@
   justify-content: space-between;
   gap: 36px;
   padding: 53px 0 47px;
-  border-bottom: 1px solid #d9dfd4;
+  border-bottom: 1px solid #d8d7e9;
 }
 .cases-heading-copy {
   max-width: 720px;
@@ -67,7 +67,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #8b7650;
+  color: #d5614d;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -90,7 +90,7 @@
 }
 .cases-heading p {
   margin: 0;
-  color: #718078;
+  color: #33324f;
   font-size: 15px;
   line-height: 1.9;
 }
@@ -117,7 +117,7 @@
   color: #fff;
 }
 .cases-button-primary:hover {
-  background: #1d4b40;
+  background: #1b1a35;
 }
 .cases-heading-action {
   min-width: 192px;
@@ -125,16 +125,16 @@
 }
 .cases-button-arrow {
   margin-inline-start: auto;
-  color: #d3bb8b;
+  color: #f57561;
 }
 .cases-button-outline {
   background: transparent;
-  border-color: #cad4c9;
+  border-color: #d8d7e9;
   color: var(--cases-green);
 }
 .cases-button-outline:hover {
-  border-color: #6e8b78;
-  background: #f4f6ef;
+  border-color: #33324f;
+  background: #eeedf8;
 }
 .cases-layout {
   display: grid;
@@ -156,7 +156,7 @@
 .cases-section-kicker {
   display: block;
   margin-bottom: 8px;
-  color: #a28b60;
+  color: #d5614d;
   font-size: 11px;
   font-weight: 700;
 }
@@ -168,10 +168,10 @@
 }
 .cases-count {
   padding: 5px 11px;
-  border: 1px solid #dfe5db;
+  border: 1px solid #d8d7e9;
   border-radius: 30px;
-  color: #6d8074;
-  background: #fbfcf8;
+  color: #33324f;
+  background: #eeedf8;
   font-size: 12px;
   white-space: nowrap;
 }
@@ -182,7 +182,7 @@
   align-items: center;
   justify-content: center;
   padding: 42px 24px;
-  border: 1px solid #dfe5da;
+  border: 1px solid #d8d7e9;
   border-radius: 10px;
   background: #fff;
   text-align: center;
@@ -194,15 +194,15 @@
   height: 64px;
   margin-bottom: 21px;
   border-radius: 50%;
-  background: #f0f4ec;
-  color: #496c58;
+  background: #eeedf8;
+  color: #33324f;
 }
 .cases-state-icon-warning {
-  background: #faf1e8;
+  background: #f7f5f0;
   color: #9b6d46;
 }
 .cases-state-overline {
-  color: #a18b62;
+  color: #d5614d;
   font-size: 11px;
   font-weight: 700;
 }
@@ -215,12 +215,12 @@
 .cases-state p {
   max-width: 365px;
   margin: 0 0 23px;
-  color: #79877e;
+  color: #33324f;
   font-size: 13px;
   line-height: 1.9;
 }
 .cases-state .cases-spinner {
-  color: #8b9e8d;
+  color: #747284;
 }
 .cases-state .cases-inline-error {
   margin: 16px 0 0;
@@ -240,7 +240,7 @@
   padding: 25px;
   border-radius: 10px;
   background: var(--cases-green);
-  color: #f8f7f1;
+  color: #f7f5f0;
 }
 .cases-aside::after {
   position: absolute;
@@ -248,7 +248,7 @@
   top: 32px;
   width: 150px;
   height: 150px;
-  border: 1px solid rgba(199, 170, 113, 0.2);
+  border: 1px solid rgba(245, 117, 97, 0.2);
   border-radius: 50%;
   content: "";
   pointer-events: none;
@@ -257,7 +257,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #d1bd93;
+  color: #f57561;
   font-size: 11px;
   font-weight: 700;
 }
@@ -272,7 +272,7 @@
   top: 0;
   width: 26px;
   height: 26px;
-  border: 1px solid #b89e70;
+  border: 1px solid #f57561;
   border-radius: 50%;
 }
 .cases-aside-mark span:first-child {
@@ -290,17 +290,17 @@
 }
 .cases-aside p {
   margin: 0;
-  color: #bdcec3;
+  color: #d8d7e9;
   font-size: 12px;
   line-height: 2;
 }
 .cases-aside-divider {
   height: 1px;
   margin: 24px 0 17px;
-  background: rgba(236, 241, 230, 0.17);
+  background: rgba(238, 237, 248, 0.17);
 }
 .cases-aside .cases-aside-note {
-  color: #d7d8bd;
+  color: #fae1d8;
   font-size: 11px;
 }
 .cases-list {
@@ -309,7 +309,7 @@
 }
 .cases-card {
   padding: 23px 25px 0;
-  border: 1px solid #e0e6dc;
+  border: 1px solid #eeedf8;
   border-radius: 9px;
   background: #fff;
   transition:
@@ -317,8 +317,8 @@
     box-shadow 0.2s;
 }
 .cases-card:hover {
-  border-color: #bbcdbd;
-  box-shadow: 0 8px 24px rgba(13, 48, 41, 0.04);
+  border-color: #d8d7e9;
+  box-shadow: 0 8px 24px rgba(27, 26, 53, 0.04);
 }
 .cases-card-top,
 .cases-card-title-wrap {
@@ -340,18 +340,18 @@
   width: 47px;
   height: 47px;
   border-radius: 7px;
-  background: #edf2e9;
-  color: #416652;
+  background: #eeedf8;
+  color: #33324f;
 }
 .cases-card-overline {
   display: block;
   margin-bottom: 2px;
-  color: #9aab9c;
+  color: #747284;
   font-size: 10px;
 }
 .cases-card h3 {
   margin: 0;
-  color: #183b30;
+  color: #1b1a35;
   font-size: 16px;
   font-weight: 700;
 }
@@ -364,8 +364,8 @@
   gap: 7px;
   padding: 6px 10px;
   border-radius: 30px;
-  background: #f1f5ed;
-  color: #57735e;
+  background: #eeedf8;
+  color: #33324f;
   font-size: 11px;
   font-weight: 600;
   overflow-wrap: anywhere;
@@ -375,7 +375,7 @@
   height: 6px;
   flex: 0 0 auto;
   border-radius: 50%;
-  background: #86a585;
+  background: #747284;
 }
 .cases-card-details {
   display: grid;
@@ -388,12 +388,12 @@
 }
 .cases-card-details dt {
   margin-bottom: 6px;
-  color: #9aa69c;
+  color: #747284;
   font-size: 11px;
 }
 .cases-card-details dd {
   margin: 0;
-  color: #3f594c;
+  color: #33324f;
   font-size: 13px;
   font-weight: 600;
   overflow-wrap: anywhere;
@@ -403,7 +403,7 @@
   justify-content: space-between;
   align-items: center;
   min-height: 54px;
-  border-top: 1px solid #edf0ea;
+  border-top: 1px solid #eeedf8;
 }
 .cases-open-link,
 .cases-delete-button {
@@ -414,16 +414,16 @@
   font-weight: 700 !important;
 }
 .cases-open-link {
-  color: #285743;
+  color: #33324f;
 }
 .cases-open-link:hover {
-  color: #a0814a;
+  color: #d5614d;
 }
 .cases-delete-button {
   padding: 8px 0;
   border: 0;
   background: transparent;
-  color: #8d9990;
+  color: #747284;
 }
 .cases-delete-button:hover {
   color: #a64e47;
@@ -433,13 +433,13 @@
   align-items: center;
   gap: 9px;
   margin-top: 45px;
-  color: #a5afa4;
+  color: #747284;
   font-size: 11px;
 }
 .cases-bottom-note span {
   width: 18px;
   height: 1px;
-  background: #c9b083;
+  background: #f57561;
 }
 .cases-modal-backdrop {
   position: fixed;
@@ -448,12 +448,12 @@
   display: grid;
   place-items: center;
   padding: 20px;
-  background: rgba(9, 29, 24, 0.62);
+  background: rgba(27, 26, 53, 0.62);
 }
 .cases-modal {
   width: min(100%, 430px);
   padding: 26px;
-  border: 1px solid #e3e9df;
+  border: 1px solid #eeedf8;
   border-radius: 10px;
   background: #fff;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
@@ -478,7 +478,7 @@
   padding: 6px;
   border: 0;
   background: none;
-  color: #8d9b91;
+  color: #747284;
 }
 .cases-modal h2 {
   margin: 20px 0 9px;
@@ -486,7 +486,7 @@
 }
 .cases-modal p {
   margin: 0;
-  color: #758379;
+  color: #33324f;
   font-size: 13px;
   line-height: 1.9;
 }

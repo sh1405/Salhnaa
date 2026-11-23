@@ -1,61 +1,153 @@
 import { Link } from "wouter";
-import { ArrowDownLeft, ArrowLeft, ArrowUpLeft, Building2, Check, CircleDot, Compass, Earth, GitMerge, Layers3, Leaf, MessageCircle, Network, Scale, ShieldCheck, Sparkles, Workflow } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowDownLeft,
+  ArrowLeft,
+  ArrowUpLeft,
+  Building2,
+  CircleDot,
+  Compass,
+  Earth,
+  GitMerge,
+  Layers3,
+  LockKeyhole,
+  MessageCircle,
+  Network,
+  ShieldCheck,
+  Workflow,
+} from "lucide-react";
 import { Brand } from "@/components/SiteHeader";
 
 const tracks = [
-  { id:"individual", number:"01", icon:CircleDot, title:"الأفراد", description:"للخلافات الشخصية والمالية والعلاقات بين الأفراد.", label:"مساحة لفهم ما حدث" },
-  { id:"family", number:"02", icon:GitMerge, title:"الأسرة والعائلة", description:"حين تتداخل الروابط القريبة مع وجهات نظر مختلفة.", label:"نحفظ قيمة العلاقة" },
-  { id:"community", number:"03", icon:Network, title:"القبائل والمجتمعات", description:"مسار يراعي تعدد الأطراف والتمثيل والاعتبارات الاجتماعية.", label:"نستمع إلى الأطراف" },
-  { id:"business", number:"04", icon:Scale, title:"التجارة والشراكات", description:"للاختلافات التعاقدية والتجارية ومصالح الشركاء.", label:"ننظر إلى المصالح" },
-  { id:"workplace", number:"05", icon:Workflow, title:"العمل والوظيفة", description:"مساحة لفهم الخلافات المهنية مع مراعاة الحقوق والإجراءات.", label:"وضوح في بيئة العمل" },
-  { id:"organization", number:"06", icon:Building2, title:"المؤسسات والجهات", description:"للخلافات التنظيمية وبين الإدارات والجهات المختلفة.", label:"حلول تراعي السياق" },
-  { id:"multi", number:"07", icon:Layers3, title:"متعددة الأطراف", description:"عندما تتعدد وجهات النظر وتتقاطع المصالح.", label:"نرتب أبعاد الخلاف" },
-  { id:"international", number:"08", icon:Earth, title:"عابرة للحدود", description:"للعلاقات التي تتصل بأكثر من دولة أو نظام.", label:"خصوصية كل سياق" },
+  { id: "individual", number: "01", icon: CircleDot, title: "الأفراد", description: "خلافات شخصية أو مالية؛ ابدأ بما حدث وما تريد تغييره.", label: "بين شخصين" },
+  { id: "family", number: "02", icon: GitMerge, title: "الأسرة والعائلة", description: "حين تتشابك العلاقة القريبة مع احتياجات وحدود مختلفة.", label: "علاقات قريبة" },
+  { id: "community", number: "03", icon: Network, title: "المجتمعات والقبائل", description: "رتّب تعدد الأصوات والمصالح والتمثيل دون افتراض الإجماع.", label: "تعدد الأصوات" },
+  { id: "business", number: "04", icon: Layers3, title: "التجارة والشراكات", description: "حوّل الالتزامات ومصالح الأطراف إلى مسائل قابلة للنقاش.", label: "علاقات تجارية" },
+  { id: "workplace", number: "05", icon: Workflow, title: "العمل والوظيفة", description: "افصل بين أثر الخلاف وطريقة العمل أو الإجراء الذي يحتاج توضيحًا.", label: "بيئة العمل" },
+  { id: "organization", number: "06", icon: Building2, title: "المؤسسات والجهات", description: "مساحة أولية للنظر في العلاقة والأدوار والمسؤوليات المتقاطعة.", label: "مؤسسات" },
+  { id: "multi", number: "07", icon: Compass, title: "خلاف متعدد الأطراف", description: "صورة منظّمة لما يتقاطع وما يختلف بين المجموعات المعنية.", label: "أكثر من طرفين" },
+  { id: "international", number: "08", icon: Earth, title: "خلاف عابر للحدود", description: "دوّن السياقات والدول ذات الصلة، وانتبه إلى اختلاف الأطر النظامية.", label: "أكثر من سياق" },
+];
+
+const mapSteps = [
+  { number: "01", title: "المسألة", text: "ما الذي حدث، وما الذي ما زال يحتاج إلى توضيح؟" },
+  { number: "02", title: "ما يهمّك", text: "الحاجة أو المصلحة خلف طلبك، لا الطلب وحده." },
+  { number: "03", title: "خيارات أولية", text: "بدائل قابلة للنقاش؛ ليست وعودًا ولا التزامات." },
+  { number: "04", title: "تجربة ومراجعة", text: "خطوة صغيرة، علامة نجاح، ووقت للعودة إليها." },
 ];
 
 export default function Home() {
-  return <main dir="rtl">
-    <section className="hero">
-      <div className="hero-grid shell">
-        <div className="hero-copy">
-          <div className="hero-eyebrow"><span></span> مساحة أقرب للتفاهم</div>
-          <h1>لكل خلافٍ<br/><em>مساحة أخرى</em><br/>للفهم.</h1>
-          <p className="hero-description">في صالِحنا، نؤمن أن الإصغاء بداية كل حل. مساحة مهنية تساعدك على فهم الخلاف، وترتيب ما يهمّك، واستكشاف الطريق إلى التفاهم.</p>
-          <div className="hero-actions"><Link href="/journey" className="button button-gold">ابدأ رحلة الصلح <ArrowLeft size={19}/></Link><a href="#approach" className="hero-learn">تعرّف على صالِحنا <span><ArrowDownLeft size={15}/></span></a></div>
-          <div className="hero-note"><ShieldCheck size={16}/><span>تبدأ بخطوة واعية، دون مشاركة تلقائية مع الآخرين</span></div>
+  return (
+    <main className="redesign-home" dir="rtl" lang="ar">
+      <section className="new-hero" aria-labelledby="home-title">
+        <div className="new-hero__grid shell">
+          <div className="new-hero__copy">
+            <div className="new-hero__meta"><span className="brand-signal" /> أداة عربية لتهيئة الإصلاح <span className="new-hero__edition">صالِحنا / ٠١</span></div>
+            <h1 id="home-title">لا نبدأ بـ<br /><span className="new-hero__question">«من المخطئ؟»</span><br />بل بـ<br /><em>«ما الذي يحتاج<br className="desktop-break" /> إلى إصلاح؟»</em></h1>
+            <p className="new-hero__lead">مساحة عملية ترتّب روايتك، وتكشف ما يهمّك، وتساعدك على التفكير في خطوة تفاهم قابلة للنقاش — دون أن تتكلم نيابةً عنك.</p>
+            <div className="new-hero__actions">
+              <Link href="/journey" className="button button-coral">ارسم خريطة خلافك <ArrowLeft size={18} /></Link>
+              <a href="#how-it-works" className="new-hero__secondary">كيف تعمل؟ <span><ArrowDownLeft size={15} /></span></a>
+            </div>
+            <div className="new-hero__promise"><LockKeyhole size={15} /><span>إجاباتك لك؛ لا تُشارك تلقائيًا ولا تُرسل دعوة إلى الطرف الآخر.</span></div>
+          </div>
+
+          <div className="new-hero__art" aria-label="عمل فني تجريدي يصوّر مسارين يتّسع بينهما جسر مشترك">
+            <img src="/manus-storage/async-images/qF7RWyhGGo6xnPdx7AoA6K/image-1.webp" alt="" />
+            <div className="new-hero__art-tag new-hero__art-tag--top"><span>وجهة نظر</span><strong>تُسمَع</strong></div>
+            <div className="new-hero__art-tag new-hero__art-tag--bottom"><span>اختلاف</span><strong>يفتح احتمالًا</strong></div>
+            <div className="new-hero__art-index">THE THIRD SPACE <span>—</span> مساحة ثالثة</div>
+            <span className="new-hero__art-mark" aria-hidden="true">↙</span>
+          </div>
         </div>
-        <div className="hero-visual" aria-hidden="true">
-          <div className="visual-frame"><img src="/manus-storage/async-images/HbtKLMl2HKAR5Z0TxHughI/image-1.webp" alt=""/><div className="frame-corner top"></div><div className="frame-corner bottom"></div></div>
-          <div className="visual-caption"><span className="caption-mark">✦</span><div><strong>لأن الصلح خير</strong><small>ولأن لكل حكاية أكثر من وجه</small></div></div>
-          <div className="visual-index">SALIHNA <span> / </span> THE ART OF UNDERSTANDING</div>
+        <div className="new-hero__floor shell"><span>وضوحٌ قبل القرار</span><span className="new-hero__rule" /><a href="#how-it-works">اكتشف المنهج <ArrowDown size={14} /></a></div>
+      </section>
+
+      <section className="promise-band" aria-label="مبادئ التجربة">
+        <div className="shell promise-band__inner">
+          <p><span>ليست وساطة آلية.</span> بل مساحة تهيئة قبل أي حوار.</p>
+          <div><ShieldCheck size={18} /><span>السلامة قبل التفاهم</span></div>
+          <div><Compass size={18} /><span>أسئلة بحسب المسار</span></div>
+          <div><GitMerge size={18} /><span>خطوة صغيرة قابلة للمراجعة</span></div>
         </div>
-      </div>
-      <div className="hero-bottom shell"><span>نحو مساحة أرحب للتفاهم</span><span className="hero-line"></span><span>01 — 04</span></div>
-    </section>
+      </section>
 
-    <section className="principles-strip"><div className="shell strip-inner"><div className="strip-intro"><span className="gold-dot"></span> في كل خطوة، نضع الإنسان أولاً.</div><div><ShieldCheck size={19}/><span>خصوصية تراعي حساسية الخلاف</span></div><div><Compass size={19}/><span>أسئلة تناسب كل سياق</span></div><div><GitMerge size={19}/><span>الحلول تبدأ بالفهم</span></div></div></section>
+      <section id="how-it-works" className="map-section" aria-labelledby="map-title">
+        <div className="shell map-section__layout">
+          <div className="map-section__intro">
+            <span className="section-kicker"><span>الطريقة / ٠٢</span> من رواية إلى قرار</span>
+            <h2 id="map-title">ليس ملخصًا فقط.<br /><em>بل خريطة لما يمكن فعله.</em></h2>
+            <p>في نهاية الرحلة، تجمع إجاباتك في لوحة واحدة: المسألة كما ترويها، ما يهمك، الخيارات التي قد تبحثها، وكيف تختبر أي خطوة وتراجعها.</p>
+            <Link href="/journey" className="text-link">ابدأ بناء الخريطة <ArrowLeft size={17} /></Link>
+            <div className="map-section__note"><span>تنبيه مهم</span><p>الخريطة تعكس ما أدخلته أنت وحدك. لا تتحقق من الوقائع، ولا تمثّل وجهة الطرف الآخر، وليست وساطة فعلية أو رأيًا قانونيًا.</p></div>
+          </div>
 
-    <section id="paths" className="paths-section section-padding">
-      <div className="shell">
-        <div className="section-heading"><div><div className="section-kicker"><span>01</span> مسارات الإصلاح</div><h2>كل خلافٍ مختلف.<br/><em>والبداية تصنع الفرق.</em></h2></div><div className="heading-side"><p>اختر المسار الأقرب إلى طبيعة خلافك؛ لنطرح عليك ما يناسبه من أسئلة، خطوة بخطوة.</p><Link href="/journey" className="text-link">استكشف كل المسارات <ArrowLeft size={17}/></Link></div></div>
-        <div className="track-grid">{tracks.map(({id,number,icon:Icon,title,description,label}) => <Link key={id} href={`/journey?kind=${id}`} className="track-card"><div className="track-top"><span className="track-icon"><Icon size={22} strokeWidth={1.45}/></span><span className="track-number">{number}</span></div><div className="track-body"><span className="track-label">{label}</span><h3>{title}</h3><p>{description}</p></div><div className="track-bottom"><span>ابدأ هذا المسار</span><ArrowUpLeft size={17}/></div></Link>)}</div>
-        <div className="paths-bottom">لا تجد ما يصف حالتك تمامًا؟ <Link href="/journey">ابدأ بالأقرب، ويمكنك التوضيح لاحقًا <ArrowLeft size={15}/></Link></div>
-      </div>
-    </section>
+          <div className="decision-map" aria-label="مكوّنات خريطة قرار أولية">
+            <div className="decision-map__head"><span><i /> خريطة قرار أولية</span><small>نموذج من أربعة محاور</small></div>
+            <div className="decision-map__rows">
+              {mapSteps.map((step, index) => <div className={`decision-map__row decision-map__row--${index + 1}`} key={step.number}>
+                <span className="decision-map__num">{step.number}</span>
+                <div><h3>{step.title}</h3><p>{step.text}</p></div>
+                <span className="decision-map__node" aria-hidden="true" />
+              </div>)}
+            </div>
+            <div className="decision-map__foot"><span>كل محور قابل للمراجعة</span><span className="decision-map__connector" /><span>القرار لك</span></div>
+          </div>
+        </div>
+      </section>
 
-    <section id="approach" className="approach-section section-padding">
-      <div className="shell approach-layout">
-        <div className="approach-copy"><div className="section-kicker light"><span>02</span> فلسفتنا في الإصلاح</div><h2>نبدأ بالإنسان،<br/><em>قبل الخلاف.</em></h2><p>خلف كل موقف قصة، وخلف كل مطلب احتياج. لهذا صممنا تجربة تعينك على ترتيب أفكارك، دون أن تحكم على طرف أو تفرض حلاً.</p><Link href="/journey" className="button button-outline-light">اكتشف رحلتك <ArrowLeft size={18}/></Link><div className="approach-art"><span></span><span></span><span></span></div></div>
-        <div className="approach-steps"><div><span className="step-number">01</span><div><h3>نفهم السياق</h3><p>أسئلة مختصرة تتكيّف مع طبيعة المسألة، من العلاقة والأطراف إلى الوقائع كما ترويها.</p></div><Compass size={23}/></div><div><span className="step-number">02</span><div><h3>نرتّب ما يهمّك</h3><p>نفصل بين ما حدث، وما تطمح إليه، وما يمكن أن يكون مساحة مشتركة للنقاش.</p></div><Layers3 size={23}/></div><div><span className="step-number">03</span><div><h3>نترك لك القرار</h3><p>تراجع ما كتبته وتختار خطوتك التالية. لا يُتواصل مع أي طرف نيابة عنك.</p></div><GitMerge size={23}/></div></div>
-      </div>
-    </section>
+      <section id="paths" className="routes-section" aria-labelledby="routes-title">
+        <div className="shell">
+          <div className="routes-heading">
+            <div><span className="section-kicker"><span>المسارات / ٠٣</span> أسئلة لا قوالب جاهزة</span><h2 id="routes-title">ابدأ من طبيعة<br /><em>الخلاف الذي أمامك.</em></h2></div>
+            <div className="routes-heading__aside"><p>اختر الأقرب. تتغير الأسئلة بحسب السياق، ويمكنك ترك غير الضروري فارغًا.</p><Link href="/journey" className="text-link">كل المسارات <ArrowLeft size={17} /></Link></div>
+          </div>
 
-    <section className="dialogue-section section-padding"><div className="shell dialogue-layout"><div className="dialogue-panel"><div className="panel-head"><span><MessageCircle size={18}/> مساحة للحوار</span><span>أداة عملية</span></div><div className="quote-mark">“</div><p>أود أن نتحدث بهدوء عن الموضوع، وأن نفهم ما يهمّ كلًّا منا قبل أن نبحث عن حل.</p><div className="panel-foot"><span></span><span></span><span></span></div></div><div className="dialogue-copy"><div className="section-kicker"><span>03</span> أدوات تقرّب المسافات</div><h2>الكلمات الأولى<br/><em>تفتح أبوابًا جديدة.</em></h2><p>قد تكون بداية الحديث أصعب خطوة. أداة صياغة الحوار تساعدك على التعبير عما يهمّك بلغة هادئة، ثم تترك لك تعديلها كما تشاء.</p><Link href="/dialogue" className="button button-dark">جرّب أداة الحوار <ArrowLeft size={18}/></Link><small>تعمل أداة الحوار على جهازك، ولا ترسل ما تكتبه إلى أطراف أخرى.</small><div className="assistant-callout"><Sparkles size={18}/><div><strong>هل تودّ ترتيب أفكارك بمساعدة ذكية؟</strong><span>مساعد اختياري لتنظيم ما تكتبه، بموافقتك ومراجعتك.</span></div><Link href="/assistant" aria-label="افتح المساعد الذكي"><ArrowLeft size={18}/></Link></div></div></div></section>
+          <div className="route-grid">
+            {tracks.map(({ id, number, icon: Icon, title, description, label }, index) => (
+              <Link key={id} href={`/journey?kind=${id}`} className={`route-card route-card--${(index % 4) + 1}`}>
+                <div className="route-card__top"><span className="route-card__icon"><Icon size={20} strokeWidth={1.8} /></span><span className="route-card__number">{number}</span></div>
+                <span className="route-card__label">{label}</span><h3>{title}</h3><p>{description}</p>
+                <div className="route-card__link"><span>ابدأ من هنا</span><ArrowUpLeft size={16} /></div>
+              </Link>
+            ))}
+          </div>
+          <p className="routes-foot">المسارات بداية منظّمة وليست تصنيفًا قانونيًا لطبيعة النزاع. <Link href="/trust">حدود الأداة والسلامة <ArrowLeft size={14} /></Link></p>
+        </div>
+      </section>
 
-    <section id="business" className="business-section"><div className="shell business-inner"><div className="business-symbol"><Building2 size={35} strokeWidth={1.2}/></div><div><div className="section-kicker"><span>04</span> للأعمال والمؤسسات</div><h2>عندما تحمي مساحة التفاهم<br/><em>استمرارية العمل.</em></h2><p>من الشراكات إلى بيئات العمل، لكل علاقة مهنية تفاصيلها. ابدأ بتحديد السياق والمصالح والالتزامات التي ينبغي مراعاتها.</p><Link href="/journey?kind=business" className="text-link">ابدأ المسار التجاري <ArrowLeft size={17}/></Link></div><div className="business-detail"><span>مسار مدروس</span><strong>علاقات أكثر وضوحًا.<br/>قرارات أكثر وعيًا.</strong><div className="detail-line"></div><small>تجربة تراعي طبيعة الخلاف المهني.</small></div></div></section>
+      <section className="test-section" aria-labelledby="test-title">
+        <div className="shell test-section__layout">
+          <div className="test-section__heading"><span className="section-kicker section-kicker--light"><span>الإصلاح / ٠٤</span> جرّب، تعلّم، راجع</span><h2 id="test-title">لا تبحث عن<br /><em>«حلّ مثالي».</em><br />ابدأ بخطوة<br /><span>يمكن اختبارها.</span></h2><p>يمكن أن تبدأ خيارات التفاهم صغيرة: توضيح مسؤولية، تجربة ترتيب جديد، أو جلسة استماع محددة الموضوع. المهم: من يفعل ماذا، وما الذي سيُعدّ تقدّمًا، ومتى تراجعان النتيجة؟</p><Link href="/journey" className="button button-outline-light">ابنِ خطوة قابلة للمراجعة <ArrowLeft size={17} /></Link></div>
+          <div className="test-card">
+            <div className="test-card__header"><span>مصمّم على مقاس الخلاف</span><MessageCircle size={17} /></div>
+            <div className="test-card__line"><span>01</span><div><small>الخطوة</small><strong>ماذا سنجرّب؟</strong></div><span className="test-card__stripe" /></div>
+            <div className="test-card__line"><span>02</span><div><small>المسؤولية</small><strong>من يتولى التنفيذ؟</strong></div><span className="test-card__stripe" /></div>
+            <div className="test-card__line"><span>03</span><div><small>إشارة نجاح</small><strong>ما الذي نلاحظه؟</strong></div><span className="test-card__stripe" /></div>
+            <div className="test-card__line"><span>04</span><div><small>مراجعة</small><strong>متى نعود إليها؟</strong></div><span className="test-card__stripe" /></div>
+            <div className="test-card__foot"><span>اقتراح للتفكير، لا وعد بالنتيجة</span><ArrowDownLeft size={16} /></div>
+          </div>
+        </div>
+      </section>
 
-    <section className="closing-section"><div className="shell closing-inner"><div><div className="section-kicker light"><span>خطوة نحو التفاهم</span></div><h2>قد تبدأ المسافة الأقرب<br/><em>بخطوة واحدة.</em></h2><p>ابدأ بما تعرفه الآن. يمكنك مراجعة ما كتبته قبل حفظه.</p></div><Link href="/journey" className="button button-gold">ابدأ رحلة الصلح <ArrowLeft size={18}/></Link></div></section>
+      <section className="dialogue-section" aria-labelledby="dialogue-title">
+        <div className="shell dialogue-section__layout">
+          <div className="dialogue-section__card"><span className="dialogue-section__quote-mark">“</span><p>أود أن أسمع كيف رأيت الموقف، ثم نفكر في خطوة عملية تناسبنا.</p><div className="dialogue-section__card-foot"><span>مسودة، لا نص محفوظ</span><span className="dialogue-section__dots"><i /><i /><i /></span></div></div>
+          <div className="dialogue-section__copy"><span className="section-kicker"><span>أداة عملية / ٠٥</span> للحظة ما قبل الحديث</span><h2 id="dialogue-title">ابدأ بجملة<br /><em>تترك بابًا مفتوحًا.</em></h2><p>أداة حوار محلية تساعدك على تحويل ما حدث وما يهمك إلى افتتاحية هادئة. يمكنك تعديلها أو نسخها — ولا تُرسل إلى أحد.</p><Link href="/dialogue" className="button button-dark">حضّر بداية الحوار <ArrowLeft size={17} /></Link><div className="dialogue-section__local"><LockKeyhole size={14} /> تعمل هذه المسودة على جهازك فقط.</div></div>
+        </div>
+      </section>
 
-    <footer className="site-footer"><div className="shell footer-grid"><div className="footer-brand"><Brand/><p>مساحة مهنية لفهم الخلاف، وتقريب وجهات النظر، واستكشاف فرص التفاهم.</p><span>لأن الصلح خير</span></div><div><h4>اكتشف صالِحنا</h4><a href="/#paths">مسارات الإصلاح</a><a href="/#approach">منهجيتنا</a><Link href="/dialogue">أداة الحوار</Link><Link href="/trust">الثقة والسلامة</Link></div><div><h4>ابدأ من هنا</h4><Link href="/journey">رحلة الصلح</Link><Link href="/cases">ملفاتي</Link><a href="/#business">الأعمال والمؤسسات</a></div><div className="footer-notice"><ShieldCheck size={21}/><h4>سلامتك أولاً</h4><p>إذا وُجد خطر فوري أو تهديد، تواصل مع الطوارئ أو جهة حماية مختصة في بلدك. قد لا تكون الوساطة مناسبة لكل حالة.</p></div></div><div className="shell footer-bottom"><span>© صالِحنا — لأن الصلح خير</span><span>صالِحنا ليست جهة قضائية، ولا تضمن الوصول إلى اتفاق.</span></div></footer>
-  </main>;
+      <section id="business" className="business-band">
+        <div className="shell business-band__inner"><div className="business-band__icon"><Building2 size={28} /></div><div className="business-band__copy"><span className="section-kicker"><span>مسار متخصص</span> للعلاقات المهنية</span><h2>إذا اختلّ التعاون،<br /><em>فابدأ بتوضيح ما يستمر.</em></h2><p>للشراكات والعمل والمؤسسات: ميّز بين ما يخصّ العلاقة، والتوقعات، والمسؤولية، وأي إجراء قائم ينبغي وضعه في الحسبان.</p><Link href="/journey?kind=business" className="text-link">افتح المسار التجاري <ArrowLeft size={16} /></Link></div><div className="business-band__aside"><span>ملاحظة صريحة</span><strong>صالِحنا لا تقدّم<br />استشارة قانونية.</strong><span className="business-band__divider" /><small>تحقّق من المواعيد الرسمية والالتزامات مع مختصّك.</small></div></div>
+      </section>
+
+      <section className="limits-section">
+        <div className="shell limits-section__inner"><div><span className="section-kicker"><span>ثقة وسلامة</span> حدود نلتزم بها</span><h2>التفاهم مهم؛<br /><em>لكن سلامتك أولًا.</em></h2></div><div className="limits-grid"><div><ShieldCheck size={19} /><h3>السلامة تسبق الصلح</h3><p>عند الخطر أو الإكراه، قد لا تكون الوساطة مناسبة. أوقف الرحلة واطلب دعمًا محليًا موثوقًا.</p></div><div><LockKeyhole size={19} /><h3>الخصوصية ليست وعدًا مطلقًا</h3><p>الملف لا يُشارك تلقائيًا؛ حفظه يتطلب حسابًا وموافقة. راجع صفحة الثقة لمعرفة ما يُحفظ.</p></div><div><ArrowDownLeft size={19} /><h3>مسودتك لا تمثل الطرفين</h3><p>ما تنتجه الأداة تأمل منظّم من إجاباتك وحدك، لا وساطة أو حكمًا أو ضمانًا للتفاهم.</p></div></div><Link href="/trust" className="limits-link">اقرأ تفاصيل الثقة والسلامة <ArrowLeft size={16} /></Link></div>
+      </section>
+
+      <section className="last-step"><div className="shell last-step__inner"><div><span className="section-kicker section-kicker--light"><span>الخطوة التالية</span> ابدأ كما أنت</span><h2>ليس عليك أن تعرف<br /><em>الحل قبل البداية.</em></h2><p>اكتب ما تعرفه الآن، واترك الأسئلة الأخرى فارغةً إلى أن تتضح.</p></div><Link href="/journey" className="button button-coral">ابدأ خريطة خلافك <ArrowLeft size={18} /></Link></div></section>
+
+      <footer className="new-footer"><div className="shell new-footer__grid"><div className="new-footer__brand"><Brand /><p>أداة عربية لتهيئة الأطراف لفهم الخلاف واستكشاف خيارات التفاهم.</p><span>مساحة ثالثة — دون أن نقرر عنك.</span></div><div><h4>استكشف</h4><a href="/#paths">مسارات الإصلاح</a><a href="/#how-it-works">خريطة القرار</a><Link href="/dialogue">أداة الحوار</Link></div><div><h4>حسابك</h4><Link href="/journey">رحلة جديدة</Link><Link href="/cases">ملفاتي</Link><Link href="/assistant">المساعد الاختياري</Link></div><div className="new-footer__safety"><ShieldCheck size={20} /><h4>سلامتك أولًا</h4><p>عند خطر فوري، تواصل مع خدمات الطوارئ أو جهة حماية في بلدك. هذه المنصة ليست خدمة طوارئ أو جهة قضائية.</p></div></div><div className="shell new-footer__base"><span>© صالِحنا</span><span>لا نتحقق من الوقائع، ولا نضمن اتفاقًا أو نتيجة.</span><Link href="/trust">الثقة والسلامة <ArrowLeft size={13} /></Link></div></footer>
+    </main>
+  );
 }

@@ -11,15 +11,30 @@ import { serveStatic, setupVite } from "./vite";
 async function startServer() {
   const app = express();
   const server = createServer(app);
-  // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  // No endpoint accepts file uploads; keep unauthenticated parser limits small.
+  app.use((_req, res, next) => {
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+    res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+    next();
+  });
+  app.use(express.json({ limit: "128kb" }));
+  app.use(express.urlencoded({ limit: "8kb", extended: false, parameterLimit: 20 }));
   app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
   app.get("/api/platform/config.js", (_req, res) => {
     res.set("Cache-Control", "no-store").type("application/javascript").send(publicPlatformScript());
   });
   registerOAuthRoutes(app);
   // tRPC API
+  app.use("/api/trpc", (req, res, next) => {
+    // Same-origin app calls remain compatible with the embedded Preview; browsers
+    // label cross-site fetches explicitly. Do not rely on CORS as a CSRF defense.
+    if (req.get("sec-fetch-site")?.toLowerCase() === "cross-site") {
+      res.status(403).json({ error: "Cross-site API requests are not allowed." });
+      return;
+    }
+    next();
+  });
   app.use(
     "/api/trpc",
     createExpressMiddleware({

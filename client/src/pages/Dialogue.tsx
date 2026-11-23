@@ -41,7 +41,7 @@ export default function Dialogue() {
 
     setFormError("");
     setDraft(
-      `أودّ أن نتحدث بشأن «${cleanTopic}».\n\nيهمّني أن نصل إلى «${cleanGoal}»، وأودّ أن أستمع إلى وجهة نظرك أيضًا.\n\nهل يمكننا أن نبحث معًا «${cleanPossibility}»؟ لعلّنا نجد خطوة مناسبة للطرفين.`
+      `أودّ أن نخصّص وقتًا للحديث عن «${cleanTopic}» بهدوء.\n\nيهمّني «${cleanGoal}»، وأود أن أسمع كيف ترى المسألة وما الذي تحتاج إلى مراعاته أنت أيضًا.\n\nهل نبحث في تجربة «${cleanPossibility}» على نطاق واضح، ثم نراجع أثرها في وقت نتفق عليه؟`
     );
     setHasDraft(true);
     setCopyStatus("idle");
@@ -107,7 +107,7 @@ export default function Dialogue() {
             <div>
               <p className="dialogue-eyebrow"><span /> لنبدأ من هنا</p>
               <h2 id="dialogue-workspace-title">رتّب أفكارك، بكلماتك</h2>
-              <p>ثلاث إجابات قصيرة تساعدك على إعداد بداية مناسبة للحوار.</p>
+                  <p>رتّب المشهد، وما يهمّك، وخطوةً صغيرة قابلة للمراجعة.</p>
             </div>
             <div className="dialogue-privacy"><LockKeyhole size={15} aria-hidden="true" /> خاص بك وعلى جهازك</div>
           </div>
@@ -121,20 +121,23 @@ export default function Dialogue() {
                 </div>
                 <span className="dialogue-card-number">01</span>
               </div>
-              <p className="dialogue-form-intro">اكتب باختصار؛ لا تحتاج إلى سرد التفاصيل.</p>
+              <p className="dialogue-form-intro">إجابات قصيرة؛ لا تحتاج إلى سرد التفاصيل أو ذكر أسماء.</p>
 
               <div className="dialogue-fields">
                 <div className="dialogue-field">
-                  <label htmlFor="dialogue-topic"><span>١</span> ما الموضوع الذي ترغب في مناقشته؟</label>
-                  <input id="dialogue-topic" value={topic} onChange={(event) => setTopic(event.target.value)} maxLength={fieldLimit} placeholder="مثال: تقسيم المسؤوليات" required />
+                  <label htmlFor="dialogue-topic"><span>١</span> ما المشهد أو المسألة التي تريد تسميتها؟</label>
+                  <small className="dialogue-field-hint">صف ما يمكن ملاحظته؛ لا تفترض النوايا.</small>
+                  <input id="dialogue-topic" value={topic} onChange={(event) => setTopic(event.target.value)} maxLength={fieldLimit} placeholder="مثال: تأخر تسليم المهمة مرتين" required />
                 </div>
                 <div className="dialogue-field">
-                  <label htmlFor="dialogue-goal"><span>٢</span> ما الذي يهمك الوصول إليه؟</label>
-                  <input id="dialogue-goal" value={goal} onChange={(event) => setGoal(event.target.value)} maxLength={fieldLimit} placeholder="مثال: وضوح أكبر بيننا" required />
+                  <label htmlFor="dialogue-goal"><span>٢</span> ما المصلحة أو الحاجة وراء طلبك؟</label>
+                  <small className="dialogue-field-hint">سمّ ما تأمل حمايته أو تحسينه.</small>
+                  <input id="dialogue-goal" value={goal} onChange={(event) => setGoal(event.target.value)} maxLength={fieldLimit} placeholder="مثال: وضوح المسؤوليات واستمرار العمل" required />
                 </div>
                 <div className="dialogue-field">
-                  <label htmlFor="dialogue-possibility"><span>٣</span> ما المساحة التي يمكن بحثها مع الطرف الآخر؟</label>
-                  <input id="dialogue-possibility" value={possibility} onChange={(event) => setPossibility(event.target.value)} maxLength={fieldLimit} placeholder="مثال: طريقة مناسبة لتوزيع المهام" required />
+                  <label htmlFor="dialogue-possibility"><span>٣</span> ما أصغر خطوة تقترحون تجربة أثرها؟</label>
+                  <small className="dialogue-field-hint">اجعلها واضحة وقابلة للمراجعة، لا التزامًا مفتوحًا.</small>
+                  <input id="dialogue-possibility" value={possibility} onChange={(event) => setPossibility(event.target.value)} maxLength={fieldLimit} placeholder="مثال: توزيع المهام لأسبوعين ثم مراجعتها" required />
                 </div>
               </div>
 
@@ -153,7 +156,7 @@ export default function Dialogue() {
               <div className="dialogue-card-header">
                 <div className="dialogue-card-heading">
                   <span className="dialogue-card-icon dialogue-card-icon-gold"><MessageCircle size={19} aria-hidden="true" /></span>
-                  <div><span className="dialogue-step">الخطوة الثانية</span><h3>صياغتك المقترحة</h3></div>
+                  <div><span className="dialogue-step">الخطوة الثانية</span><h3>مسودة بداية الحوار</h3></div>
                 </div>
                 <span className="dialogue-card-number">02</span>
               </div>
@@ -188,7 +191,7 @@ export default function Dialogue() {
                   {copyStatus === "error" && "تعذّر النسخ تلقائيًا. حدّد النص وانسخه يدويًا."}
                 </p>
               </div>
-              <div className="dialogue-template-note"><Leaf size={16} aria-hidden="true" /> صياغة بالقوالب، وليست خدمة ذكاء اصطناعي.</div>
+              <div className="dialogue-template-note"><Leaf size={16} aria-hidden="true" /> صياغة محلية بالقوالب؛ عدّلها قبل استخدامها. ليست وساطة ولا خدمة ذكاء اصطناعي.</div>
             </div>
           </div>
 

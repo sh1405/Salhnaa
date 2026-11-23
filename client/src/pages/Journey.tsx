@@ -64,8 +64,8 @@ const steps = [
   { label: "تفاصيل المسار", sub: "بما يناسب حالتك" },
   { label: "الموقف والطلب", sub: "وجهة نظرك" },
   { label: "ما يهمّك", sub: "المصالح والمخاوف" },
-  { label: "مساحة للحل", sub: "خيارات ممكنة" },
-  { label: "مراجعة الملف", sub: "قبل الحفظ" },
+  { label: "خطوة تفاهم", sub: "تجربة ومراجعة" },
+  { label: "خريطة القرار", sub: "قبل الحفظ" },
 ];
 
 const safetyOptions: { value: Safety; title: string; description: string }[] = [
@@ -122,6 +122,9 @@ function questionsFor(kind: Kind | "", step: number, responses: Responses): Ques
     { key: "common_ground", label: "هل ترى مساحة اتفاق يمكن البناء عليها؟", placeholder: "يمكنك تركها فارغة إن لم تتضح بعد..." },
     { key: "fairness_criteria", label: "ما الذي يجعل أي خيار منصفًا وقابلًا للتطبيق؟", hint: "قد يشمل ذلك الوضوح، التوقيت، القدرة على التنفيذ، أو موافقة أصحاب الصفة. هذا ليس تقييمًا قانونيًا.", placeholder: "اكتب معيارًا أو معيارين مهمين لك...", depth: "explore" },
     { key: "non_agreement", label: "إن لم يظهر تفاهم الآن، ما الخطوة التالية التي تراها مناسبة؟", hint: "لا نوصي بمسار قانوني؛ هذا السؤال يساعدك على معرفة احتياجك وخياراتك، ويمكنك تركه فارغًا.", placeholder: "سأحتاج إلى وقت / معلومات / استشارة مختصة / لم يتضح بعد...", depth: "explore" },
+    { key: "first_step", label: "ما أصغر خطوة آمنة يمكن تجربتها؟", hint: "فكّر في خطوة محدودة وواضحة بدل التزام كبير. هذا اقتراح للتفكير، لا اتفاق قائم.", placeholder: "مثلًا: تبادل معلومات محددة أو تجربة ترتيب مؤقت...", depth: "explore" },
+    { key: "success_signal", label: "ما العلامة التي تخبرك أن الخطوة مفيدة؟", hint: "اختر تغيرًا يمكن ملاحظته، لا وعدًا بنتيجة مثالية.", placeholder: "مثلًا: وضوح المسؤوليات أو عودة التواصل...", depth: "explore" },
+    { key: "review_timing", label: "متى وكيف تراجعون أثرها؟", hint: "حدّد إطارًا زمنيًا أو طريقة مراجعة إن كان ذلك مناسبًا.", placeholder: "مثلًا: مراجعة ما حدث بعد أسبوعين...", depth: "explore" },
   ];
   return [];
 }
@@ -134,8 +137,8 @@ const stageCopy = [
   { eyebrow: "تفاصيل تناسب مسارك", title: "لنفهم السياق أكثر", description: "بضع تفاصيل اختيارية تساعدك على ترتيب الصورة، دون الحاجة لذكر هويات." },
   { eyebrow: "من وجهة نظرك", title: "موقفك وما تطلبه", description: "افصل بين ما تراه في الخلاف وما ترغب في الوصول إليه." },
   { eyebrow: "خلف الموقف", title: "ما الذي يهمّك حقًا؟", description: "المصالح والمخاوف قد تفتح مساحة لفهم ما يحتاج إلى مراعاة." },
-  { eyebrow: "التفكير في الممكن", title: "مساحة لخيارات جديدة", description: "لا تحتاج إلى امتلاك حل نهائي الآن؛ يمكنك تدوين أفكارك الأولية فقط." },
-  { eyebrow: "قبل الحفظ", title: "راجع ملفك على مهل", description: "هذه مسودة بروايتك أنت. يمكنك العودة لأي جزء وتعديله قبل الحفظ." },
+  { eyebrow: "التفكير في الممكن", title: "من خيار إلى تجربة", description: "اختر خطوةً صغيرة قابلة للمراجعة، أو اترك الفكرة حتى تتضح. لا يتحول أي اقتراح إلى التزام هنا." },
+  { eyebrow: "قبل الحفظ", title: "راجع خريطة قرارك", description: "ترى الآن روايتك وما كتبته عن مصالحك وخياراتك. يمكنك تعديل كل محور قبل الحفظ." },
 ];
 
 const storageKey = "salihna-journey-login-draft-v1";
@@ -191,6 +194,7 @@ export default function Journey() {
   const [exploreOpen, setExploreOpen] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
+  const [mapCopyStatus, setMapCopyStatus] = useState<"idle" | "success" | "error">("idle");
   const [storageCleanupError, setStorageCleanupError] = useState(false);
   const [loadedStatus, setLoadedStatus] = useState<"draft" | "paused">("draft");
   const [notEditable, setNotEditable] = useState(false);
@@ -258,6 +262,32 @@ export default function Journey() {
   const visibleQuestions = currentQuestions.filter(question => question.depth !== "explore" || exploreOpen || Boolean(responses[question.key]?.trim()));
   const hasExploreQuestions = currentQuestions.some(question => question.depth === "explore");
   const busy = createCase.isPending || updateCase.isPending;
+  const resolutionCards = [
+    { number: "01", title: "الوقائع والسؤال المفتوح", main: responses.facts?.trim(), extraLabel: "ما لم يُحسم", extra: responses.disputed_issue?.trim(), editStep: 3 },
+    { number: "02", title: "ما قد يجمع بينكم", main: responses.shared_facts?.trim() || responses.common_ground?.trim(), extraLabel: "نقطة اتفاق محتملة", extra: responses.shared_facts?.trim() && responses.common_ground?.trim() ? responses.common_ground.trim() : "", editStep: 3 },
+    { number: "03", title: "ما يهمّك أنت", main: responses.interests?.trim(), extraLabel: "النتيجة التي تطلبها", extra: responses.request?.trim(), editStep: 6 },
+    { number: "04", title: "خيارات ومعايير", main: responses.solutions?.trim(), extraLabel: "ما يجعلها قابلة للتطبيق", extra: responses.fairness_criteria?.trim(), editStep: 7 },
+    { number: "05", title: "تجربة ومراجعة", main: responses.first_step?.trim(), extraLabel: responses.success_signal?.trim() ? `إشارة التقدم: ${responses.success_signal.trim()}` : "إشارة التقدم", extra: responses.review_timing?.trim(), editStep: 7 },
+  ];
+  const resolutionMapText = [
+    "خريطة قرار أولية — من رواية صاحب الملف فقط",
+    ...resolutionCards.map(card => [
+      `${card.number}. ${card.title}`,
+      card.main,
+      card.extra && `${card.extraLabel}: ${card.extra}`,
+    ].filter(Boolean).join("\n")),
+    "تنبيه: لم تتحقق المنصة من الوقائع، ولا تمثل هذه الخريطة وجهة الطرف الآخر أو وساطة فعلية أو رأيًا قانونيًا.",
+  ].filter(Boolean).join("\n\n");
+
+  async function copyResolutionMap() {
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
+      await navigator.clipboard.writeText(resolutionMapText);
+      setMapCopyStatus("success");
+    } catch {
+      setMapCopyStatus("error");
+    }
+  }
 
   function goTo(next: number) {
     setError("");
@@ -278,6 +308,7 @@ export default function Journey() {
 
   function changeResponse(key: string, value: string) {
     setError("");
+    setMapCopyStatus("idle");
     setResponses(previous => ({ ...previous, [key]: value }));
   }
 
@@ -390,6 +421,22 @@ export default function Journey() {
                     {step === 2 && <div className="journey-fields"><div className="journey-field"><label className="journey-field__label" htmlFor="journey-country">الدولة ذات الصلة بالخلاف <span className="journey-field__required">*</span></label><p className="journey-field__hint">اكتب اسم الدولة أو اختر من الاقتراحات.</p><input id="journey-country" list="journey-countries" value={country} maxLength={80} onChange={event => { setCountry(event.target.value); setError(""); }} placeholder="مثال: السعودية" autoComplete="country-name" /><datalist id="journey-countries">{countries.map(item => <option value={item} key={item} />)}</datalist></div><div className="journey-soft-note"><Globe2 size={18} /><span>تختلف الأنظمة والسياقات من بلد لآخر. هذه الرحلة لا تقدّم استشارة قانونية.</span></div></div>}
                     {step >= 3 && step <= 7 && <div className="journey-fields">{visibleQuestions.map(question => <QuestionField key={question.key} question={question} value={responses[question.key] || ""} onChange={value => changeResponse(question.key, value)} />)}{hasExploreQuestions && <button className="journey-explore-toggle" type="button" aria-expanded={exploreOpen} onClick={() => setExploreOpen(open => !open)}>{exploreOpen ? "إخفاء الأسئلة الإضافية" : "استكشف بُعدًا إضافيًا — اختياري"}<ChevronDown size={16} /></button>}{step === 4 && <div className="journey-branch-note"><CircleHelp size={16} /><span>تتبدل أسئلة التفويض والإجراءات بحسب إجابتك؛ التفاصيل التابعة لإجابة لم تعد منطبقة لن تدخل المراجعة أو الحفظ، ويمكن استعادتها في هذه الجلسة بالعودة للاختيار السابق.</span></div>}<div className="journey-soft-note"><LockKeyhole size={18} /><span>يرجى تجنّب الأسماء وبيانات الهوية والتفاصيل الحساسة أو المستندات. الأسئلة غير المعلّمة بنجمة اختيارية.</span></div></div>}
                     {step === 8 && <div className="journey-review">
+                      <section className="resolution-map" aria-labelledby="resolution-map-title">
+                        <div className="resolution-map__header">
+                          <div><span className="resolution-map__eyebrow">مخرَج الرحلة / مسودة قابلة للتعديل</span><h2 id="resolution-map-title">خريطة قرار أولية</h2><p>تجمع ما كتبته أنت؛ لا تستنتج موقف الطرف الآخر.</p></div>
+                          <button type="button" className="resolution-map__copy" onClick={() => void copyResolutionMap()}><ClipboardList size={16} />{mapCopyStatus === "success" ? "نُسخت الخريطة" : mapCopyStatus === "error" ? "تعذّر النسخ" : "انسخ الخريطة"}</button>
+                        </div>
+                        <div className="resolution-map__grid">
+                          {resolutionCards.map(card => <article className="resolution-map__card" key={card.number}>
+                            <div className="resolution-map__card-top"><span>{card.number}</span><button type="button" onClick={() => goTo(card.editStep)} aria-label={`تعديل محور ${card.title}`}><Pencil size={13} /> تعديل</button></div>
+                            <h3>{card.title}</h3>
+                            <p className={card.main ? "" : "is-empty"}>{card.main || "لم تضف إجابة بعد؛ يمكنك الرجوع إليها أو تركها فارغة."}</p>
+                            {card.extraLabel && <div className="resolution-map__extra"><span>{card.extraLabel}</span><p className={card.extra ? "" : "is-empty"}>{card.extra || "لم يُحدّد بعد."}</p></div>}
+                          </article>)}
+                        </div>
+                        <div className="resolution-map__caveat"><ShieldCheck size={17} /><p><strong>من منظور واحد:</strong> ما يرد هنا إجاباتك أنت؛ لم تتحقق المنصة من الوقائع، ولم تسمع الطرف الآخر. الخريطة أداة تهيئة وليست وساطة فعلية أو اتفاقًا ملزمًا أو رأيًا قانونيًا.</p></div>
+                        {mapCopyStatus === "error" && <p className="resolution-map__copy-status" role="status">تعذّر النسخ التلقائي على هذا الجهاز. تبقى الخريطة ظاهرة هنا ويمكنك العودة لتعديلها.</p>}
+                      </section>
                       <div className="journey-review__section"><div className="journey-review__head"><div><span className="journey-review__icon"><Compass size={18} /></span><strong>أساس الملف</strong></div><button type="button" onClick={() => goTo(0)}><Pencil size={14} /> تعديل</button></div><div className="journey-review__pair"><span>المسار</span><strong>{selectedKind?.title}</strong></div><div className="journey-review__pair"><span>الدولة</span><strong>{country}</strong><button type="button" onClick={() => goTo(2)} aria-label="تعديل الدولة"><Pencil size={14} /></button></div><div className="journey-review__pair"><span>السلامة</span><strong>أشعر بالأمان للمتابعة</strong><button type="button" onClick={() => goTo(1)} aria-label="تعديل إجابة السلامة"><Pencil size={14} /></button></div></div>
                       {[3, 4, 5, 6, 7].map(index => <div className="journey-review__section" key={index}><div className="journey-review__head"><div><span className="journey-review__icon">{index === 3 ? <FileText size={18} /> : index === 4 ? <ClipboardList size={18} /> : index === 5 ? <Scale size={18} /> : index === 6 ? <Layers3 size={18} /> : <GitMerge size={18} />}</span><strong>{steps[index].label}</strong></div><button type="button" onClick={() => goTo(index)}><Pencil size={14} /> تعديل</button></div>{questionsFor(kind, index, responses).map(question => <div className="journey-review__answer" key={question.key}><span>{question.label}</span><p className={!responses[question.key]?.trim() ? "is-empty" : ""}>{displayAnswer(question, responses[question.key] || "")}</p></div>)}</div>)}
                       <div className="journey-consent"><label><input type="checkbox" checked={consent} onChange={event => { setConsent(event.target.checked); setError(""); }} /><span>أوافق على حفظ هذه المعلومات في ملف مرتبط بحسابي.</span></label><p>الحفظ لا يشارك الملف مع الأطراف الأخرى، ولا يرسل دعوات. يمكنك مراجعة الملف من صفحة «ملفاتي».</p></div>
