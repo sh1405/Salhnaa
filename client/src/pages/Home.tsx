@@ -32,7 +32,7 @@ export default function Home() {
       <section className="new-hero" aria-labelledby="home-title">
         <div className="new-hero__grid shell">
           <div className="new-hero__copy">
-            <div className="new-hero__meta"><span className="brand-signal" /> <span className="new-hero__descriptor">أداة عربية لتهيئة الإصلاح</span><span className="new-hero__edition">صالِحنا / ٠١</span></div>
+            <div className="new-hero__meta"><span className="brand-signal" /> <span className="new-hero__descriptor">من الإنصات تبدأ مساحة التفاهم</span><span className="new-hero__edition">صالِحنا / ٠١</span></div>
             <h1 id="home-title">لا نبدأ بـ<br /><span className="new-hero__question">«من المخطئ؟»</span><br />بل بـ<br /><em>«ما الذي يحتاج<br className="desktop-break" /> إلى إصلاح؟»</em></h1>
             <p className="new-hero__lead">مساحة عملية ترتّب روايتك، وتكشف ما يهمّك، وتساعدك على التفكير في خطوة تفاهم قابلة للنقاش — دون أن تتكلم نيابةً عنك.</p>
             <div className="new-hero__actions">
@@ -43,8 +43,8 @@ export default function Home() {
 
           <div className="new-hero__art" aria-label="عمل فني تجريدي يصوّر مسارين يتّسع بينهما جسر مشترك">
             <img src="/manus-storage/async-images/qF7RWyhGGo6xnPdx7AoA6K/image-1.webp" alt="" />
-            <div className="new-hero__art-tag new-hero__art-tag--top"><span>وجهة نظر</span><strong>تُسمَع</strong></div>
-            <div className="new-hero__art-tag new-hero__art-tag--bottom"><span>اختلاف</span><strong>يفتح احتمالًا</strong></div>
+            <div className="new-hero__art-tag new-hero__art-tag--top"><span>مساحة مشتركة</span><strong>لإنصاتٍ أعمق</strong></div>
+            <div className="new-hero__art-tag new-hero__art-tag--bottom"><span>أفق الحوار</span><strong>تفاهمٌ يُبنى</strong></div>
             <div className="new-hero__art-index">THE THIRD SPACE <span>—</span> مساحة ثالثة</div>
             <span className="new-hero__art-mark" aria-hidden="true">↙</span>
           </div>
