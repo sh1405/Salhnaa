@@ -120,6 +120,13 @@ function questionsFor(kind: Kind | "", step: number, responses: Responses): Ques
   if (step === 7) return [
     { key: "solutions", label: "ما الخيارات التي قد تكون مستعدًا للنظر فيها؟", hint: "ليست هذه التزامات؛ مجرد أفكار أولية قابلة للتغيير.", placeholder: "اكتب أي احتمالات تراها مناسبة..." },
     { key: "common_ground", label: "هل ترى مساحة اتفاق يمكن البناء عليها؟", placeholder: "يمكنك تركها فارغة إن لم تتضح بعد..." },
+    { key: "invite_channel", label: "إن رغبت بدعوة الطرف الآخر لاحقًا، ما القناة التي تفضّلها؟", hint: "اختيار اختياري للتفضيل فقط. لا تُرسل المنصة دعوة الآن ولا تطلب بيانات الطرف الآخر. قد تتطلب القنوات اعتمادًا أو تكلفة، ولا نضمن المجانية أو التغطية في كل دولة.", type: "choice", options: [
+      { value: "whatsapp", label: "WhatsApp", description: "تفضيل محفوظ فقط؛ الإرسال من المنصة غير مفعّل." },
+      { value: "telegram", label: "Telegram", description: "تفضيل محفوظ فقط؛ يجب أن يبدأ الطرف الآخر محادثة البوت أولًا." },
+      { value: "email", label: "البريد الإلكتروني", description: "تفضيل محفوظ فقط؛ لا توجد خدمة بريد دعوات مفعّلة." },
+      { value: "other_app", label: "تطبيق تواصل آخر", description: "يمكنك مشاركة نص الدعوة بنفسك؛ لا يوجد ربط تلقائي." },
+      { value: "sms", label: "رسالة نصية SMS", description: "تفضيل محفوظ فقط؛ التكلفة والتغطية تختلفان بحسب الدولة والمزوّد." },
+    ] },
     { key: "followup_mode", label: "ما طريقة المتابعة التي تفضّلها؟", hint: "هذا تفضيل يُحفظ ضمن ملفك فقط؛ لا يُرسل إلى وسيط ولا ينشئ موعدًا أو غرفة. استقبال طلبات الوساطة والجلسات الصوتية غير مفعّل حاليًا. والكتابة وحدها خيار كافٍ.", type: "choice", options: [
       { value: "writing_only", label: "الكتابة وحدها تكفيني", description: "أتابع ترتيب أفكاري وخريطة القرار كتابةً." },
       { value: "human_mediation", label: "أفضل وساطة بشرية", description: "تفضيل مبدئي محفوظ في الملف؛ لا يوجد حاليًا استقبال أو إسناد لطلب وساطة." },
@@ -147,6 +154,7 @@ const stageCopy = [
 ];
 
 const storageKey = "salihna-journey-login-draft-v1";
+const invitationTemplate = "أحد أعضاء (صالحنا) يحمل لك ودًّا، ويرجو صفاء ما بينكما، وقد بادر بخطوة صلحٍ حبًّا فيك. هلا اطلعت على مبادرته وتضحياته؟ والصلح خير، ألّف الله بين قلبيكما وجعل صلحكما مباركًا.";
 const countries = ["السعودية", "الإمارات العربية المتحدة", "الكويت", "قطر", "البحرين", "عُمان", "الأردن", "مصر", "المغرب", "تونس", "الجزائر", "العراق", "لبنان", "فلسطين", "اليمن", "السودان", "تركيا", "المملكة المتحدة", "الولايات المتحدة"];
 
 function isKind(value: unknown): value is Kind {
@@ -210,6 +218,7 @@ export default function Journey() {
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
   const [mapCopyStatus, setMapCopyStatus] = useState<"idle" | "success" | "error">("idle");
+  const [invitationCopyStatus, setInvitationCopyStatus] = useState<"idle" | "success" | "error">("idle");
   const [storageCleanupError, setStorageCleanupError] = useState(false);
   const [loadedStatus, setLoadedStatus] = useState<"draft" | "paused">("draft");
   const [notEditable, setNotEditable] = useState(false);
@@ -279,6 +288,8 @@ export default function Journey() {
   const busy = createCase.isPending || updateCase.isPending;
   const followupQuestion = questionsFor(kind, 7, responses).find(question => question.key === "followup_mode");
   const followupLabel = followupQuestion?.options?.find(option => option.value === responses.followup_mode)?.label;
+  const inviteQuestion = questionsFor(kind, 7, responses).find(question => question.key === "invite_channel");
+  const inviteChannelLabel = inviteQuestion?.options?.find(option => option.value === responses.invite_channel)?.label;
   const resolutionCards = [
     { number: "01", title: "الوقائع والسؤال المفتوح", main: responses.facts?.trim(), extraLabel: "ما لم يُحسم", extra: responses.disputed_issue?.trim(), editStep: 3 },
     { number: "02", title: "ما قد يجمع بينكم", main: responses.shared_facts?.trim() || responses.common_ground?.trim(), extraLabel: "نقطة اتفاق محتملة", extra: responses.shared_facts?.trim() && responses.common_ground?.trim() ? responses.common_ground.trim() : "", editStep: 3 },
@@ -286,6 +297,7 @@ export default function Journey() {
     { number: "04", title: "خيارات ومعايير", main: responses.solutions?.trim(), extraLabel: "ما يجعلها قابلة للتطبيق", extra: responses.fairness_criteria?.trim(), editStep: 7 },
     { number: "05", title: "تجربة ومراجعة", main: responses.first_step?.trim(), extraLabel: responses.success_signal?.trim() ? `إشارة التقدم: ${responses.success_signal.trim()}` : "إشارة التقدم", extra: responses.review_timing?.trim(), editStep: 7 },
     { number: "06", title: "تفضيل طريقة المتابعة", main: followupLabel, extraLabel: "تنبيه", extra: responses.followup_mode ? "هذا تفضيل داخل ملفك فقط؛ لا يُرسل طلب وساطة ولا ينشئ موعدًا أو غرفة صوتية." : "يمكنك اختيار الكتابة وحدها أو ترك التفضيل دون تحديد.", editStep: 7 },
+    { number: "07", title: "قناة الدعوة المفضلة", main: inviteChannelLabel, extraLabel: "تنبيه", extra: inviteChannelLabel ? "هذا تفضيل محفوظ فقط؛ لم تُفعّل الدعوات ولا تُرسل رسالة عند الحفظ." : "لم تحدد قناة؛ الاختيار اختياري.", editStep: 7 },
   ];
   const resolutionMapText = [
     "خريطة قرار أولية — من رواية صاحب الملف فقط",
@@ -304,6 +316,16 @@ export default function Journey() {
       setMapCopyStatus("success");
     } catch {
       setMapCopyStatus("error");
+    }
+  }
+
+  async function copyInvitationTemplate() {
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
+      await navigator.clipboard.writeText(invitationTemplate);
+      setInvitationCopyStatus("success");
+    } catch {
+      setInvitationCopyStatus("error");
     }
   }
 
@@ -458,6 +480,7 @@ export default function Journey() {
                       <div className="journey-review__section"><div className="journey-review__head"><div><span className="journey-review__icon"><Compass size={18} /></span><strong>أساس الملف</strong></div><button type="button" onClick={() => goTo(0)}><Pencil size={14} /> تعديل</button></div><div className="journey-review__pair"><span>المسار</span><strong>{selectedKind?.title}</strong></div><div className="journey-review__pair"><span>الدولة</span><strong>{country}</strong><button type="button" onClick={() => goTo(2)} aria-label="تعديل الدولة"><Pencil size={14} /></button></div><div className="journey-review__pair"><span>السلامة</span><strong>أشعر بالأمان للمتابعة</strong><button type="button" onClick={() => goTo(1)} aria-label="تعديل إجابة السلامة"><Pencil size={14} /></button></div></div>
                       {[3, 4, 5, 6, 7].map(index => <div className="journey-review__section" key={index}><div className="journey-review__head"><div><span className="journey-review__icon">{index === 3 ? <FileText size={18} /> : index === 4 ? <ClipboardList size={18} /> : index === 5 ? <Scale size={18} /> : index === 6 ? <Layers3 size={18} /> : <GitMerge size={18} />}</span><strong>{steps[index].label}</strong></div><button type="button" onClick={() => goTo(index)}><Pencil size={14} /> تعديل</button></div>{questionsFor(kind, index, responses).map(question => <div className="journey-review__answer" key={question.key}><span>{question.label}</span><p className={!responses[question.key]?.trim() ? "is-empty" : ""}>{displayAnswer(question, responses[question.key] || "")}</p></div>)}</div>)}
                       <div className="journey-consent"><label><input type="checkbox" checked={consent} onChange={event => { setConsent(event.target.checked); setError(""); }} /><span>أوافق على حفظ هذه المعلومات في ملف مرتبط بحسابي.</span></label><p>الحفظ لا يشارك الملف مع الأطراف الأخرى، ولا يرسل دعوات. يمكنك مراجعة الملف من صفحة «ملفاتي».</p></div>
+                      <section className="journey-review__section" aria-labelledby="invitation-template-title"><div className="journey-review__head"><div><span className="journey-review__icon"><MessageCircle size={18} /></span><strong id="invitation-template-title">نص دعوة مقترح</strong></div><button type="button" onClick={() => void copyInvitationTemplate()}><ClipboardList size={14} />{invitationCopyStatus === "success" ? "نُسخ النص" : invitationCopyStatus === "error" ? "تعذّر النسخ" : "نسخ النص"}</button></div><p>{invitationTemplate}</p><p className="journey-field__hint">هذا نص مقترح للنسخ والمراجعة اليدوية فقط؛ لا ترسل المنصة رسالة ولا تشارك بيانات ملفك. تأكد من ملاءمة التواصل وسلامته قبل الإرسال.</p></section>
                       {!isAuthenticated && <div className="journey-login"><div className="journey-login__title"><LockKeyhole size={18} /><strong>تسجيل الدخول مطلوب للحفظ</strong></div><p>بعد تسجيل الدخول ستعود إلى الصفحة الرئيسية؛ افتح رحلة إنشاء الملف مجددًا. لن يُحفظ الملف في حسابك تلقائيًا، وستحتاج إلى مراجعته وتأكيد الحفظ.</p><label><input type="checkbox" checked={keepForLogin} onChange={event => setKeepForLogin(event.target.checked)} /><span>أوافق على حفظ نسخة مؤقتة من إجاباتي في متصفح هذا الجهاز خلال الجلسة لاستعادتها بعد الدخول. تُحذف بعد الحفظ، وقد يطّلع عليها مستخدم الجهاز.</span></label><p>دون هذا الخيار ستفقد الإجابات عند الانتقال لتسجيل الدخول.</p></div>}
                     </div>}
                     {error && <div className="journey-error" role="alert">{error}</div>}
