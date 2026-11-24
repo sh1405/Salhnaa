@@ -6,6 +6,7 @@ import NotFound from "@/pages/NotFound";
 import Home from "@/pages/Home";
 import Journey from "@/pages/Journey";
 import Cases from "@/pages/Cases";
+import Invitations from "@/pages/Invitations";
 import Dialogue from "@/pages/Dialogue";
 import Assistant from "@/pages/Assistant";
 import Trust from "@/pages/Trust";
@@ -19,6 +20,8 @@ function Router() {
     <Route path="/journey/:id" component={Journey}/>
     <Route path="/journey" component={Journey}/>
     <Route path="/cases" component={Cases}/>
+    <Route path="/invitations" component={Invitations}/>
+    <Route path="/invite/:code" component={Invitations}/>
     <Route path="/dialogue" component={Dialogue}/>
     <Route path="/assistant" component={Assistant}/>
     <Route path="/trust" component={Trust}/>

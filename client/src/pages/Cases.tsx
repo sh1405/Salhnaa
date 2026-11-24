@@ -9,6 +9,7 @@ import {
   LockKeyhole,
   Plus,
   RotateCw,
+  Send,
   Trash2,
   TriangleAlert,
   X,
@@ -155,18 +156,25 @@ export default function Cases() {
             </h1>
             <p>مساحة خاصة لترتيب ما يهمّك، والعودة إلى رحلتك متى احتجت.</p>
           </div>
-          <Link
-            className="cases-button cases-button-primary cases-heading-action"
-            href="/journey"
-          >
-            <Plus size={19} strokeWidth={1.8} />
-            <span>ابدأ ملفًا جديدًا</span>
-            <ArrowUpLeft
-              className="cases-button-arrow"
-              size={16}
-              strokeWidth={1.8}
-            />
-          </Link>
+          <div className="cases-heading-actions">
+            {isAuthenticated && (
+              <Link className="cases-button cases-button-outline" href="/invitations">
+                <Send size={17} /> الدعوات
+              </Link>
+            )}
+            <Link
+              className="cases-button cases-button-primary cases-heading-action"
+              href="/journey"
+            >
+              <Plus size={19} strokeWidth={1.8} />
+              <span>ابدأ ملفًا جديدًا</span>
+              <ArrowUpLeft
+                className="cases-button-arrow"
+                size={16}
+                strokeWidth={1.8}
+              />
+            </Link>
+          </div>
         </header>
 
         <div className="cases-layout">

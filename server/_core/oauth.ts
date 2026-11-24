@@ -56,7 +56,10 @@ export function registerOAuthRoutes(app: Express) {
       const cookieOptions = getSessionCookieOptions(req);
       res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: SESSION_LIFETIME_MS });
 
-      res.redirect(302, "/");
+      const returnTo = /^\/invite\/[A-Za-z0-9_-]{43}$/.test(decodeOAuthState(state).returnTo ?? "")
+        ? decodeOAuthState(state).returnTo!
+        : "/";
+      res.redirect(302, returnTo);
     } catch (error) {
       console.error("[OAuth] Callback failed", error instanceof Error ? error.message : "unknown error");
       res.status(500).json({ error: "OAuth callback failed" });

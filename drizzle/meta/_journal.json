@@ -15,6 +15,13 @@
       "when": 1795449918753,
       "tag": "0001_complete_junta",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1795548578852,
+      "tag": "0002_mediation_invitations",
+      "breakpoints": true
     }
   ]
 }
