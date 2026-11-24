@@ -32,7 +32,7 @@ export default function Home() {
       <section className="new-hero" aria-labelledby="home-title">
         <div className="new-hero__grid shell">
           <div className="new-hero__copy">
-            <div className="new-hero__meta"><span className="brand-signal" /> أداة عربية لتهيئة الإصلاح <span className="new-hero__edition">صالِحنا / ٠١</span></div>
+            <div className="new-hero__meta"><span className="brand-signal" /> <span className="new-hero__descriptor">أداة عربية لتهيئة الإصلاح</span><span className="new-hero__edition">صالِحنا / ٠١</span></div>
             <h1 id="home-title">لا نبدأ بـ<br /><span className="new-hero__question">«من المخطئ؟»</span><br />بل بـ<br /><em>«ما الذي يحتاج<br className="desktop-break" /> إلى إصلاح؟»</em></h1>
             <p className="new-hero__lead">مساحة عملية ترتّب روايتك، وتكشف ما يهمّك، وتساعدك على التفكير في خطوة تفاهم قابلة للنقاش — دون أن تتكلم نيابةً عنك.</p>
             <div className="new-hero__actions">
@@ -72,7 +72,15 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="new-footer"><div className="shell new-footer__grid"><div className="new-footer__brand"><Brand /><p>أداة عربية لتهيئة الأطراف لفهم الخلاف واستكشاف خيارات التفاهم.</p></div><div><h4>استكشف</h4><a href="/#paths">اختر نوع الخلاف</a></div><div><h4>حسابك</h4><Link href="/cases">ملفاتي</Link></div><div className="new-footer__safety"><ShieldCheck size={17} /><h4>استخدام مسؤول</h4><p>ليست وساطة أو استشارة؛ وعند الخطر الفوري تواصل مع جهة الطوارئ المحلية.</p><Link href="/trust">الخصوصية والحدود</Link></div></div><div className="shell new-footer__base"><span>© صالِحنا</span><span>لا نتحقق من الوقائع، ولا نضمن اتفاقًا أو نتيجة.</span></div></footer>
+      <footer className="new-footer">
+        <div className="shell new-footer__grid">
+          <div className="new-footer__brand"><Brand /><p>مساحة عربية ترتّب روايتك، وتساعدك على استكشاف ما يمكن إصلاحه.</p></div>
+          <nav aria-label="استكشف"><h4>استكشف</h4><a href="/#paths">مسارات الخلاف</a></nav>
+          <nav aria-label="حسابك"><h4>حسابك</h4><Link href="/cases">ملفاتي</Link></nav>
+          <div className="new-footer__safety"><ShieldCheck size={18} /><div><h4>خيارات المتابعة</h4><p>يمكنك تدوين تفضيل الوساطة البشرية أو الصوت الاختياري. استقبال الطلبات والجلسات الصوتية غير مفعّل بعد؛ والكتابة وحدها متاحة لإعداد خريطتك.</p><Link href="/trust">اعرف حدود الخدمة والخصوصية <ArrowLeft size={13} /></Link></div></div>
+        </div>
+        <div className="shell new-footer__base"><span>© صالِحنا</span><span>الخريطة من إجاباتك وحدك؛ لا نتحقق من الوقائع ولا نضمن نتيجة.</span></div>
+      </footer>
     </main>
   );
 }

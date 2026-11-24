@@ -39,10 +39,10 @@ type Question = {
   label: string;
   hint?: string;
   placeholder?: string;
-  type?: "textarea" | "text" | "select";
+  type?: "textarea" | "text" | "select" | "choice";
   required?: boolean;
   depth?: "explore";
-  options?: { value: string; label: string }[];
+  options?: { value: string; label: string; description?: string }[];
 };
 
 const kinds: { id: Kind; title: string; description: string; Icon: LucideIcon }[] = [
@@ -120,6 +120,11 @@ function questionsFor(kind: Kind | "", step: number, responses: Responses): Ques
   if (step === 7) return [
     { key: "solutions", label: "ما الخيارات التي قد تكون مستعدًا للنظر فيها؟", hint: "ليست هذه التزامات؛ مجرد أفكار أولية قابلة للتغيير.", placeholder: "اكتب أي احتمالات تراها مناسبة..." },
     { key: "common_ground", label: "هل ترى مساحة اتفاق يمكن البناء عليها؟", placeholder: "يمكنك تركها فارغة إن لم تتضح بعد..." },
+    { key: "followup_mode", label: "ما طريقة المتابعة التي تفضّلها؟", hint: "هذا تفضيل يُحفظ ضمن ملفك فقط؛ لا يُرسل إلى وسيط ولا ينشئ موعدًا أو غرفة. استقبال طلبات الوساطة والجلسات الصوتية غير مفعّل حاليًا. والكتابة وحدها خيار كافٍ.", type: "choice", options: [
+      { value: "writing_only", label: "الكتابة وحدها تكفيني", description: "أتابع ترتيب أفكاري وخريطة القرار كتابةً." },
+      { value: "human_mediation", label: "أفضل وساطة بشرية", description: "تفضيل مبدئي محفوظ في الملف؛ لا يوجد حاليًا استقبال أو إسناد لطلب وساطة." },
+      { value: "human_voice_optional", label: "وساطة بشرية، والصوت اختياري", description: "إن أُتيحت جلسة صوتية مستقبلًا، أود أن أتمكن من تخطيها ومتابعة الكتابة." },
+    ] },
     { key: "fairness_criteria", label: "ما الذي يجعل أي خيار منصفًا وقابلًا للتطبيق؟", hint: "قد يشمل ذلك الوضوح، التوقيت، القدرة على التنفيذ، أو موافقة أصحاب الصفة. هذا ليس تقييمًا قانونيًا.", placeholder: "اكتب معيارًا أو معيارين مهمين لك...", depth: "explore" },
     { key: "non_agreement", label: "إن لم يظهر تفاهم الآن، ما الخطوة التالية التي تراها مناسبة؟", hint: "لا نوصي بمسار قانوني؛ هذا السؤال يساعدك على معرفة احتياجك وخياراتك، ويمكنك تركه فارغًا.", placeholder: "سأحتاج إلى وقت / معلومات / استشارة مختصة / لم يتضح بعد...", depth: "explore" },
     { key: "first_step", label: "ما أصغر خطوة آمنة يمكن تجربتها؟", hint: "فكّر في خطوة محدودة وواضحة بدل التزام كبير. هذا اقتراح للتفكير، لا اتفاق قائم.", placeholder: "مثلًا: تبادل معلومات محددة أو تجربة ترتيب مؤقت...", depth: "explore" },
@@ -154,7 +159,17 @@ function QuestionField({ question, value, onChange }: { question: Question; valu
     <div className="journey-field">
       <label htmlFor={fieldId} className="journey-field__label">{question.label} {question.required && <span className="journey-field__required">*</span>}</label>
       {question.hint && <p className="journey-field__hint" id={`${fieldId}-hint`}>{question.hint}</p>}
-      {question.type === "select" ? (
+      {question.type === "choice" ? (
+        <div className="journey-choice-list" role="radiogroup" aria-label={question.label} aria-describedby={question.hint ? `${fieldId}-hint` : undefined}>
+          {question.options?.map(option => (
+            <label key={option.value} className={`journey-choice-card ${value === option.value ? "is-selected" : ""}`}>
+              <input id={option.value === question.options?.[0]?.value ? fieldId : undefined} type="radio" name={fieldId} value={option.value} checked={value === option.value} onChange={() => onChange(option.value)} />
+              <span className="journey-choice-card__copy"><strong>{option.label}</strong>{option.description && <small>{option.description}</small>}</span>
+              <span className="journey-choice-card__mark" aria-hidden="true" />
+            </label>
+          ))}
+        </div>
+      ) : question.type === "select" ? (
         <div className="journey-select-wrap">
           <select id={fieldId} value={value} onChange={event => onChange(event.target.value)} aria-describedby={question.hint ? `${fieldId}-hint` : undefined}>
             <option value="">اختر إجابة (اختياري)</option>
@@ -262,12 +277,15 @@ export default function Journey() {
   const visibleQuestions = currentQuestions.filter(question => question.depth !== "explore" || exploreOpen || Boolean(responses[question.key]?.trim()));
   const hasExploreQuestions = currentQuestions.some(question => question.depth === "explore");
   const busy = createCase.isPending || updateCase.isPending;
+  const followupQuestion = questionsFor(kind, 7, responses).find(question => question.key === "followup_mode");
+  const followupLabel = followupQuestion?.options?.find(option => option.value === responses.followup_mode)?.label;
   const resolutionCards = [
     { number: "01", title: "الوقائع والسؤال المفتوح", main: responses.facts?.trim(), extraLabel: "ما لم يُحسم", extra: responses.disputed_issue?.trim(), editStep: 3 },
     { number: "02", title: "ما قد يجمع بينكم", main: responses.shared_facts?.trim() || responses.common_ground?.trim(), extraLabel: "نقطة اتفاق محتملة", extra: responses.shared_facts?.trim() && responses.common_ground?.trim() ? responses.common_ground.trim() : "", editStep: 3 },
     { number: "03", title: "ما يهمّك أنت", main: responses.interests?.trim(), extraLabel: "النتيجة التي تطلبها", extra: responses.request?.trim(), editStep: 6 },
     { number: "04", title: "خيارات ومعايير", main: responses.solutions?.trim(), extraLabel: "ما يجعلها قابلة للتطبيق", extra: responses.fairness_criteria?.trim(), editStep: 7 },
     { number: "05", title: "تجربة ومراجعة", main: responses.first_step?.trim(), extraLabel: responses.success_signal?.trim() ? `إشارة التقدم: ${responses.success_signal.trim()}` : "إشارة التقدم", extra: responses.review_timing?.trim(), editStep: 7 },
+    { number: "06", title: "تفضيل طريقة المتابعة", main: followupLabel, extraLabel: "تنبيه", extra: responses.followup_mode ? "هذا تفضيل داخل ملفك فقط؛ لا يُرسل طلب وساطة ولا ينشئ موعدًا أو غرفة صوتية." : "يمكنك اختيار الكتابة وحدها أو ترك التفضيل دون تحديد.", editStep: 7 },
   ];
   const resolutionMapText = [
     "خريطة قرار أولية — من رواية صاحب الملف فقط",

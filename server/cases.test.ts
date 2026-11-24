@@ -82,6 +82,17 @@ describe("cases protected procedures", () => {
     expect(await bob.get({ id: bobFile.id })).toMatchObject({ country: "مصر" });
   });
 
+  it("persists follow-up preferences as private user-authored responses, without creating a service request", async () => {
+    const api = caller(1).cases;
+    const preferences = ["writing_only", "human_mediation", "human_voice_optional"] as const;
+    for (const followup_mode of preferences) {
+      const { id } = await api.create({ ...base, responses: { ...base.responses, followup_mode } });
+      expect((await api.get({ id })).responses.followup_mode).toBe(followup_mode);
+    }
+    expect(store.rows).toHaveLength(preferences.length);
+    expect(store.rows.every(row => row.userId === 1)).toBe(true);
+  });
+
   it("accepts exactly the journey kinds on create and update", async () => {
     const api = caller(1).cases;
     const kinds = ["individual", "family", "community", "business", "workplace", "organization", "multi", "international"] as const;
