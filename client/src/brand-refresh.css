@@ -264,36 +264,40 @@ button, input, textarea, select { font-family: inherit; }
 }
 @media (max-width: 720px) {
   .redesign-home .shell { width: min(100% - 38px, 560px); }
-  .new-hero__grid { grid-template-columns: 1fr; gap: 27px; padding-top: 34px; }
+  .new-hero__grid { grid-template-columns: 1fr; gap: 18px; padding-top: 24px; padding-bottom: 17px; }
   .new-hero__copy { padding: 0; }
   .new-hero__meta { font-size: 10px; }
-  .new-hero h1 { margin: 20px 0 13px; font-size: clamp(38px, 10.5vw, 53px); line-height: 1.48; }
+  .new-hero h1 { margin: 14px 0 9px; font-size: clamp(35px, 9vw, 44px); line-height: 1.32; }
   .desktop-break { display: none; }
-  .new-hero__lead { font-size: 12px; }
-  .new-hero__actions { gap: 15px; margin-top: 18px; }
-  .button-coral { min-height: 46px; padding-inline: 15px; font-size: 11px; }
-  .new-hero__promise { margin-top: 17px; font-size: 9px; }
-  .new-hero__art { width: calc(100% - 15px); justify-self: center; aspect-ratio: 1.22 / 1; max-height: 360px; }
-  .new-hero__art-tag { min-width: 98px; padding: 8px 10px; }
-  .new-hero__art-tag strong { font-size: 12px; }
-  .new-hero__art-tag--top { right: -9px; }
-  .new-hero__art-tag--bottom { left: -8px; }
-  .new-hero__floor { min-height: 37px; font-size: 8px; }
+  .new-hero__lead { max-width: 36em; font-size: 11px; line-height: 1.8; }
+  .new-hero__actions { gap: 12px; margin-top: 13px; }
+  .button-coral { min-height: 44px; padding-inline: 15px; font-size: 11px; }
+  .new-hero__promise { margin-top: 11px; font-size: 9px; line-height: 1.6; }
+  .new-hero__art { width: calc(100% - 12px); justify-self: center; aspect-ratio: 1.62 / 1; max-height: 230px; }
+  .new-hero__art-tag { min-width: 90px; padding: 7px 9px; }
+  .new-hero__art-tag strong { font-size: 11px; }
+  .new-hero__art-tag--top { top: 10%; right: -7px; }
+  .new-hero__art-tag--bottom { bottom: 12%; left: -7px; }
+  .new-hero__art-index { right: 11px; bottom: 11px; left: 11px; font-size: 7px; }
+  .new-hero__floor { min-height: 30px; font-size: 8px; }
   .promise-band__inner { justify-content: flex-start; gap: 10px 17px; padding-block: 15px; }
   .promise-band__inner > p { text-align: right; }
   .promise-band__inner > div { font-size: 9px; }
-  .routes-section, .dialogue-section { padding-block: 56px; }
+  .routes-section, .dialogue-section { padding-block: 36px 42px; }
+  .routes-section { background: var(--s-paper); }
   .test-section__layout, .dialogue-section__layout { grid-template-columns: 1fr; gap: 32px; }
-  .routes-heading h2, .dialogue-section__copy h2, .limits-section h2 { font-size: 31px; }
-  .routes-heading { display: block; margin-bottom: 23px; }
-  .routes-heading__aside { max-width: unset; margin-top: 13px; }
+  .routes-heading h2, .dialogue-section__copy h2 { font-size: 28px; }
+  .routes-heading { display: block; margin-bottom: 16px; }
+  .routes-heading__aside { max-width: unset; margin-top: 7px; }
+  .routes-heading__aside p { font-size: 10px; line-height: 1.7; }
   .route-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
-  .route-card { min-height: 208px; padding: 13px 12px 12px; }
-  .route-card__icon { width: 33px; height: 33px; }
-  .route-card__label { margin-top: 10px; font-size: 8px; }
-  .route-card h3 { font-size: 13px; }
-  .route-card p { font-size: 9px; line-height: 1.75; }
-  .route-card__link { font-size: 9px; }
+  .route-card { min-height: 152px; padding: 11px 10px 9px; }
+  .route-card__icon { width: 30px; height: 30px; }
+  .route-card__label { margin-top: 7px; font-size: 8px; }
+  .route-card h3 { margin: 2px 0 3px; font-size: 12px; }
+  .route-card p { display: -webkit-box; margin: 0 0 6px; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; font-size: 9px; line-height: 1.55; }
+  .route-card__link { min-height: 32px; padding-top: 6px; font-size: 9px; }
+  .routes-foot { margin-top: 13px; font-size: 9px; }
   .test-section { padding-block: 55px; }
   .test-section__heading h2 { font-size: 39px; }
   .test-section__heading > p { font-size: 11px; }
@@ -315,11 +319,12 @@ button, input, textarea, select { font-family: inherit; }
   .new-footer__base { flex-wrap: wrap; justify-content: flex-start; padding-block: 13px; line-height: 1.8; }
 }
 @media (max-width: 380px) {
-  .new-hero h1 { font-size: 35px; }
+  .new-hero h1 { font-size: 34px; }
   .new-hero__edition { font-size: 8px; }
-  .new-hero__secondary { font-size: 10px; }
-  .route-grid { grid-template-columns: 1fr; }
-  .route-card { min-height: 190px; }
+  .redesign-home .shell { width: calc(100% - 28px); }
+  .route-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 7px; }
+  .route-card { min-height: 148px; padding-inline: 8px; }
+  .route-card h3 { font-size: 11px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
