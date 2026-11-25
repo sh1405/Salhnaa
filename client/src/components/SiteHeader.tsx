@@ -8,7 +8,7 @@ import { startLogin } from "@/const";
 export function Brand({ light = false }: { light?: boolean }) {
   return (
     <Link href="/" className={`brand ${light ? "brand-light" : ""}`} aria-label="صالِحنا — الصفحة الرئيسية">
-      <img className="brand-logo-image" src="/salihna-logo-forest.webp" alt="" />
+      <img className="brand-logo-image" src="/salihna-logo-forest-transparent.webp" alt="" />
       <span className="brand-wordmark" aria-hidden="true">صالِحنا</span>
     </Link>
   );
