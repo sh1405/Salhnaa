@@ -282,3 +282,7 @@ body { background: var(--s-paper); color: var(--s-ink); font-family: var(--s-ui)
   html { scroll-behavior:auto; }
   *,*::before,*::after { animation-duration:.01ms!important; transition-duration:.01ms!important; }
 }
+
+/* Keep the original full Salihna logo in the header, recolored to the site palette. */
+.site-header .brand-logo-image { width: 60px; height: 60px; }
+.site-header .brand-wordmark { display: none; }
