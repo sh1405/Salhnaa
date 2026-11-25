@@ -10,9 +10,10 @@
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
   "orientation": "any",
-  "theme_color": "#1b1a35",
-  "background_color": "#f7f5f0",
+  "theme_color": "#103a30",
+  "background_color": "#f6f3eb",
   "icons": [
-    { "src": "/manus-storage/salihna-logo-site_65dc6209.png", "sizes": "any", "type": "image/png", "purpose": "any" }
+    { "src": "/salihna-icon-192-forest.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/salihna-icon-512-forest.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
   ]
 }

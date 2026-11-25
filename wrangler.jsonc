@@ -1,0 +1,31 @@
+{
+  "name": "salihna",
+  "main": "server/worker.ts",
+  "compatibility_date": "2025-06-01",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "assets": {
+    "directory": "./dist/public",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "salihna",
+      "database_id": "4e4fa63f-1d0e-43c0-8c1b-03017b77835d"
+    }
+  ],
+  "ai": {
+    "binding": "AI"
+  },
+  "vars": {
+    "MANUS_PROJECT_ID": "R3MkUYwg8dGBrPQL7uf5zc",
+    "MANUS_OAUTH_API_URL": "https://api.manus.ai",
+    "MANUS_OAUTH_PORTAL_URL": "https://manus.im",
+    "MANUS_API_URL": "https://forge.manus.ai",
+    "MANUS_API_BROWSER_KEY": "V6eAkqtxhcrCZJGpwh39QQ"
+  }
+}

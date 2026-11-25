@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { getCloudflareBindings, getWorkersAI } from "../cloudflare/runtime";
 import { invokeLLM } from "./_core/llm";
 import { protectedProcedure, router } from "./_core/trpc";
 
@@ -57,6 +58,15 @@ function completionText(value: unknown): string {
     .join("");
 }
 
+function workerAiText(value: unknown): string {
+  if (typeof value === "string") return value;
+  if (!value || typeof value !== "object") return "";
+  const result = value as { response?: unknown; choices?: Array<{ message?: { content?: unknown } }> };
+  if (typeof result.response === "string") return result.response;
+  if (result.response && typeof result.response === "object") return JSON.stringify(result.response);
+  return completionText(result.choices?.[0]?.message?.content).trim();
+}
+
 async function withTimeout<T>(work: Promise<T>): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
@@ -80,40 +90,48 @@ export const assistantRouter = router({
     .mutation(async ({ ctx, input }) => {
       takeRequestSlot(ctx.user.id);
       try {
-        const response = await withTimeout(invokeLLM({
-          model: "gpt-6-luna",
-          reasoning: { effort: "none" },
-          // The project's helper forwards maxTokens as max_tokens.
-          maxTokens: 900,
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: input.text },
-          ],
-          response_format: {
-            type: "json_schema",
-            json_schema: {
-              name: "organized_draft",
-              strict: true,
-              schema: {
-                type: "object",
-                properties: {
-                  description: { type: "string" },
-                  interpretation: { type: "string" },
-                  possibilities: { type: "string" },
-                },
-                required: ["description", "interpretation", "possibilities"],
-                additionalProperties: false,
-              },
-            },
+        const messages = [
+          { role: "system" as const, content: systemPrompt },
+          { role: "user" as const, content: input.text },
+        ];
+        const schema = {
+          type: "object",
+          properties: {
+            description: { type: "string" },
+            interpretation: { type: "string" },
+            possibilities: { type: "string" },
           },
-        }));
-
-        // The proxy may return an error object with HTTP 200, no content, or a
-        // truncated completion. Never expose raw provider errors to the client.
-        if ("error" in response || !Array.isArray(response.choices)) throw new Error("Invalid model response");
-        const choice = response.choices[0];
-        if (!choice || choice.finish_reason === "length") throw new Error("Incomplete model response");
-        const content = completionText(choice.message?.content).trim();
+          required: ["description", "interpretation", "possibilities"],
+          additionalProperties: false,
+        };
+        let content: string;
+        const workerAI = getWorkersAI();
+        if (workerAI) {
+          const result = await withTimeout(workerAI.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
+            messages,
+            max_tokens: 900,
+            response_format: { type: "json_schema", json_schema: schema },
+          }));
+          content = workerAiText(result).trim();
+        } else if (getCloudflareBindings()) {
+          // Never send dispute text to the legacy provider from a Worker context.
+          throw new Error("Workers AI binding is unavailable");
+        } else {
+          const response = await withTimeout(invokeLLM({
+            model: "gpt-6-luna",
+            reasoning: { effort: "none" },
+            maxTokens: 900,
+            messages,
+            response_format: {
+              type: "json_schema",
+              json_schema: { name: "organized_draft", strict: true, schema },
+            },
+          }));
+          if ("error" in response || !Array.isArray(response.choices)) throw new Error("Invalid model response");
+          const choice = response.choices[0];
+          if (!choice || choice.finish_reason === "length") throw new Error("Incomplete model response");
+          content = completionText(choice.message?.content).trim();
+        }
         if (!content) throw new Error("Empty model response");
         const parsed = responseSchema.parse(JSON.parse(content));
         return {

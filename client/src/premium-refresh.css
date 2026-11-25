@@ -1,0 +1,284 @@
+/* صالِحنا — مجلس إصلاح تحريري: أخضر عميق، حجر دافئ، ونحاس معتّق */
+:root {
+  --s-ink: #17392f;
+  --s-ink-soft: #3e574d;
+  --s-forest: #103a30;
+  --s-forest-dark: #0a2d25;
+  --s-brass: #a98248;
+  --s-brass-light: #d9c49c;
+  --s-paper: #f6f3eb;
+  --s-white: #fffdf8;
+  --s-sage: #e9ede6;
+  --s-muted: #66746b;
+  --s-line: #deddd1;
+  --s-ui: "IBM Plex Sans Arabic", "Noto Sans Arabic", sans-serif;
+  --s-display: "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
+  --s-reading: "Noto Naskh Arabic", serif;
+  color-scheme: light;
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--s-paper); color: var(--s-ink); font-family: var(--s-ui); }
+::selection { color: var(--s-white); background: var(--s-forest); }
+:focus-visible { outline: 3px solid var(--s-brass); outline-offset: 3px; }
+
+/* رأس خفيف وواضح، والشعار يحتفظ بألوانه الأصلية */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 72px;
+  color: var(--s-ink);
+  background: rgb(250 248 242 / 96%);
+  border-bottom: 1px solid rgb(16 58 48 / 10%);
+  box-shadow: 0 3px 16px rgb(16 58 48 / 4%);
+  backdrop-filter: blur(14px);
+}
+.header-inner { height: 100%; gap: clamp(18px, 3vw, 40px); }
+.brand { gap: 8px; color: var(--s-ink); }
+.brand-logo-image { display:block; width:48px; height:48px; flex:0 0 auto; object-fit:contain; border:0; border-radius:0; background:transparent; box-shadow:none; mix-blend-mode:multiply; }
+.brand-wordmark { color:var(--s-ink); font:800 20px/1.2 var(--s-display); letter-spacing:-.035em; }
+.nav-links { gap:clamp(14px, 2.1vw, 29px); }
+.nav-links a { color:#59685f; font-size:12px; transition:color .18s ease; }
+.nav-links a:hover,.nav-links a.active { color:var(--s-brass); }
+.header-actions { gap:15px; }
+.account-link { color:var(--s-ink); font-size:12px; }
+.header-cta { min-height:42px; padding-inline:18px; border:1px solid var(--s-forest); border-radius:7px; background:var(--s-forest); box-shadow:0 5px 14px rgb(16 58 48 / 12%); }
+.header-cta:hover { background:var(--s-forest-dark); }
+.mobile-toggle { color:var(--s-forest); }
+.nav-links.nav-open { background:var(--s-paper); border-bottom:1px solid var(--s-line); box-shadow:0 14px 26px rgb(16 58 48 / 9%); }
+.nav-links>a,.mobile-nav-actions>a { border-color:var(--s-line); }
+.mobile-nav-actions button { color:var(--s-ink); }
+
+/* الرئيسية: عنوان تحريري وصورة أصلية بلوحة واحدة ومساحات أهدأ */
+.redesign-home { overflow:hidden; color:var(--s-ink); background:var(--s-paper); }
+.redesign-home .shell { width:min(1220px, calc(100% - 72px)); margin-inline:auto; padding-inline:0; }
+.new-hero {
+  position:relative;
+  overflow:hidden;
+  color:var(--s-ink);
+  background:
+    radial-gradient(ellipse at 7% 92%, rgb(169 130 72 / 7%), transparent 34%),
+    linear-gradient(110deg, #f8f5ed 0%, #f5f1e7 100%);
+  border-bottom:1px solid var(--s-line);
+}
+.new-hero::before,.new-hero::after { position:absolute; left:-210px; border:1px solid rgb(16 58 48 / 8%); border-radius:50%; content:""; pointer-events:none; }
+.new-hero::before { top:-380px; width:700px; height:700px; }
+.new-hero::after { top:-300px; left:-130px; width:540px; height:540px; border-color:rgb(169 130 72 / 12%); }
+.new-hero__grid {
+  position:relative; z-index:1; display:grid; grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);
+  align-items:center; gap:clamp(34px,5vw,70px); min-height:505px; padding-block:42px 24px;
+}
+.new-hero__copy { max-width:590px; padding-block:8px; }
+.new-hero__meta { display:flex; align-items:center; gap:10px; color:#66746b; font:600 11px/1.8 var(--s-ui); }
+.new-hero__descriptor { color:#4e6358; font:500 16px/1.6 var(--s-reading); }
+.brand-signal { width:7px; height:7px; flex:0 0 auto; border-radius:50%; background:var(--s-brass); box-shadow:0 0 0 5px rgb(169 130 72 / 13%); }
+.new-hero__edition { margin-right:auto; color:#8b9188; font:600 9px Inter,sans-serif; letter-spacing:.12em; direction:ltr; }
+.new-hero h1 { max-width:590px; margin:21px 0 15px; color:var(--s-forest); font:650 clamp(37px,4vw,53px)/1.48 var(--s-display); letter-spacing:-.045em; }
+.new-hero__question { display:inline; color:#607268; font-weight:500; }
+.new-hero h1 em { display:block; margin-top:4px; color:#8b6938; font-style:normal; font-weight:700; }
+.new-hero__lead { max-width:490px; margin:0; color:#53655b; font:400 14px/2.05 var(--s-ui); }
+.new-hero__actions { display:flex; align-items:center; flex-wrap:wrap; gap:14px; margin-top:23px; }
+.button { transition:transform .2s ease, box-shadow .2s ease, background .2s ease; }
+.button:hover { transform:translateY(-2px); }
+.button-coral { display:inline-flex; min-height:49px; align-items:center; justify-content:center; gap:12px; padding-inline:21px; border:1px solid var(--s-forest); border-radius:7px; background:var(--s-forest); color:#fffdf8; box-shadow:0 7px 18px rgb(16 58 48 / 13%); font:700 12px var(--s-ui); }
+.button-coral:hover { border-color:var(--s-forest-dark); background:var(--s-forest-dark); box-shadow:0 10px 22px rgb(16 58 48 / 18%); }
+.new-hero__promise { display:flex; align-items:flex-start; gap:8px; margin-top:15px; color:#647269; font-size:10px; line-height:1.8; }
+.new-hero__promise svg { flex:0 0 auto; margin-top:2px; color:var(--s-brass); }
+.new-hero__art { position:relative; min-width:0; width:100%; aspect-ratio:1.12/1; max-height:430px; overflow:hidden; border:1px solid rgb(169 130 72 / 38%); border-radius:3px; background:#e8e9df; box-shadow:0 18px 42px rgb(23 57 47 / 12%); }
+.new-hero__art::before { position:absolute; z-index:1; inset:10px; border:1px solid rgb(255 255 255 / 50%); content:""; pointer-events:none; }
+.new-hero__art::after { position:absolute; z-index:1; inset:65% 0 0; background:linear-gradient(180deg,transparent,rgb(10 45 37 / 13%)); content:""; pointer-events:none; }
+.new-hero__art img { display:block; width:100%; height:100%; object-fit:cover; }
+.new-hero__floor { display:flex; min-height:42px; align-items:center; gap:16px; color:#6e786e; font-size:10px; }
+.new-hero__rule { height:1px; flex:1; background:rgb(16 58 48 / 20%); }
+
+/* المسارات: هرمية واضحة وبطاقات لا تتنافس مع عنوان الصفحة */
+.routes-section { padding-block:62px 68px; background:#ecefe8; border-top:1px solid rgb(16 58 48 / 6%); }
+.routes-heading { display:flex; align-items:end; justify-content:space-between; gap:34px; margin-bottom:25px; }
+.section-kicker { display:flex; align-items:center; gap:10px; color:#67766b; font:600 10px/1.8 var(--s-ui); }
+.section-kicker>span { color:#8a6939; font:700 9px Inter,var(--s-ui); letter-spacing:.08em; }
+.routes-heading h2 { margin:11px 0 0; color:var(--s-forest); font:700 clamp(30px,3vw,40px)/1.45 var(--s-display); letter-spacing:-.035em; }
+.routes-heading h2 em { color:#8b6938; font-family:var(--s-reading); font-style:normal; }
+.routes-heading__aside { max-width:340px; padding-bottom:4px; }
+.routes-heading__aside p { margin:0; color:#627067; font-size:12px; line-height:1.9; }
+.route-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:13px; }
+.route-card { position:relative; display:flex; min-height:205px; flex-direction:column; overflow:hidden; padding:16px 16px 12px; border:1px solid #dce1d8; border-radius:8px; background:var(--s-white); color:var(--s-ink); box-shadow:0 3px 12px rgb(23 57 47 / 4%); transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease; }
+.route-card::before { position:absolute; inset:0 0 auto; height:2px; background:#a98248; content:""; opacity:.7; }
+.route-card:hover { z-index:1; transform:translateY(-3px); border-color:#b9c6b9; box-shadow:0 12px 24px rgb(23 57 47 / 9%); }
+.route-card__top { display:flex; align-items:center; justify-content:space-between; }
+.route-card__icon { display:grid; width:36px; height:36px; place-items:center; border:1px solid #dce3da; border-radius:8px; background:#edf1eb; color:#557064; }
+.route-card__number { color:#92998f; font:600 9px Inter,sans-serif; }
+.route-card__label { margin-top:10px; color:#78847a; font-size:9px; }
+.route-card h3 { margin:3px 0 4px; color:var(--s-forest); font:700 14px/1.55 var(--s-display); }
+.route-card p { display:-webkit-box; margin:0 0 7px; overflow:hidden; color:#68756c; font-size:10px; line-height:1.8; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
+.route-card__link { display:flex; min-height:29px; align-items:center; justify-content:space-between; gap:8px; margin-top:auto; padding-top:6px; border-top:1px solid #edf0e9; color:#7c6036; font-size:10px; font-weight:700; }
+.route-card--2 .route-card__icon,.route-card--3 .route-card__icon,.route-card--4 .route-card__icon { color:#557064; background:#edf1eb; }
+.route-card--2 .route-card__link,.route-card--3 .route-card__link,.route-card--4 .route-card__link { color:#7c6036; }
+.routes-foot { margin:15px 0 0; color:#748076; font-size:10px; line-height:1.8; text-align:center; }
+
+/* تذييل مصغّر ومنظم */
+.new-footer { padding-top:37px; background:#faf8f2; border-top:1px solid var(--s-line); }
+.new-footer__grid { display:grid; grid-template-columns:1.3fr .7fr .7fr 1.35fr; gap:clamp(18px,3vw,38px); padding-bottom:26px; }
+.new-footer__brand>p,.new-footer__safety p { color:#69766d; font-size:10px; line-height:1.9; }
+.new-footer__brand>p { max-width:290px; }
+.new-footer__brand>.brand { margin-bottom:7px; }
+.new-footer__brand>.brand .brand-logo-image { width:42px; height:42px; }
+.new-footer__brand>.brand .brand-wordmark { font-size:18px; }
+.new-footer__grid h4 { margin:4px 0 11px; color:var(--s-forest); font:700 11px var(--s-display); }
+.new-footer__grid>nav>a,.new-footer__grid>div:not(:first-child)>a { display:inline-flex; align-items:center; gap:5px; margin-bottom:8px; color:#5f7065; font-size:10px; }
+.new-footer__grid>nav>a:hover,.new-footer__grid>div:not(:first-child)>a:hover { color:#8b6938; }
+.new-footer__safety { display:grid; grid-template-columns:20px minmax(0,1fr); align-items:start; gap:0 9px; padding-inline-start:15px; border-inline-start:1px solid #e0dfd4; }
+.new-footer__safety>svg { margin-top:2px; color:#8b6938; }
+.new-footer__safety h4 { margin-top:0; }
+.new-footer__safety p { margin:0 0 7px; }
+.new-footer__safety>div>a { display:inline-flex; align-items:center; gap:5px; color:#7c6036; font-size:9px; font-weight:700; }
+.new-footer__base { display:flex; min-height:46px; align-items:center; justify-content:space-between; gap:12px; border-top:1px solid var(--s-line); color:#778177; font-size:9px; }
+.new-footer__base>span:last-child { text-align:end; }
+
+/* توحيد الهوية داخل المسارات والصفحات التشغيلية مع حفظ دلالات الخطأ */
+.journey { --journey-green:#103a30; --journey-green-mid:#31594c; --journey-gold:#a98248; --journey-ivory:#f6f3eb; --journey-ink:#17392f; --journey-muted:#66746b; background:var(--s-paper); }
+.journey-sidebar { background:linear-gradient(150deg,#103a30,#0a2d25); }
+.journey-sidebar__ornament { border-color:rgb(217 196 156 / 23%); }
+.journey-steps li.is-current { background:rgb(255 255 255 / 8%); }
+.journey-steps .is-current .journey-steps__number { border-color:#b9975b; background:#b9975b; color:#103a30; }
+.journey-progress>span { background:#b9975b; }
+.journey-kind.is-selected,.journey-safety-option.is-selected { border-color:#a98248; background:#f5efe3; box-shadow:0 0 0 1px #a98248; }
+.journey-kind__icon,.journey-review__icon { background:#edf1eb; color:#557064; }
+.journey-kind.is-selected .journey-kind__icon { background:#e2e9e0; color:#31594c; }
+.journey-choice-dot { border-color:#c9cfc4; }
+.is-selected>.journey-choice-dot { border-color:#8b6938; background:#8b6938; }
+.journey-button--primary,.dialogue-intro-link,.dialogue-primary-button { border-radius:8px; background:#103a30; }
+.journey-button--primary:hover:not(:disabled),.dialogue-primary-button:hover { background:#0a2d25; }
+.journey-button--secondary { border-color:#deddd1; border-radius:8px; color:var(--s-ink); }
+.journey-explore-toggle { border-color:#d5c7a9; border-radius:8px; background:#f4efe4; color:#715834; }
+.journey-branch-note { border-right-color:#a98248; background:#f4f0e6; color:#58645b; }
+.journey-branch-note svg { color:#8b6938; }
+.journey-notice { border-color:#dce1d8; background:#edf1eb; color:#455c50; }
+.journey-notice svg,.dialogue-card-icon { color:#557064; }
+.journey-field input,.journey-field textarea,.journey-field select { border-color:#d9ded5; border-radius:8px; background:#fffdf8; }
+.journey-field input:focus,.journey-field textarea:focus,.journey-field select:focus { border-color:#8c9f8f; box-shadow:0 0 0 3px rgb(16 58 48 / 12%); }
+.dialogue-page,.assistant-page,.cases-page,.trust-page,.invitations-page { background:var(--s-paper); color:var(--s-ink); }
+.dialogue-intro,.assistant-hero { background:linear-gradient(120deg,#103a30,#17463a); }
+.dialogue-intro-copy h1,.assistant-hero h1 { color:#fffdf8; }
+.dialogue-intro-copy h1 em,.assistant-hero h1 em { color:#dfc99f; }
+.dialogue-intro-description,.assistant-hero-copy { color:#e0e8df; }
+.dialogue-intro-aside,.assistant-hero-aside { border-color:#b9975b; background:rgb(255 255 255 / 7%); color:#eee8db; }
+.dialogue-intro-aside p,.assistant-hero-aside p { color:#fffdf8; }
+.dialogue-intro-mark { color:#d8bd8a; }
+.dialogue-intro-line { background-color:#b9975b; }
+.dialogue-next-inner span { color:#d8bd8a; }
+.dialogue-card-icon,.assistant-card-icon { border-radius:9px; background:#edf1eb; color:#557064; }
+.dialogue-card-icon-gold,.assistant-card-icon-gold { background:#f2eadb; color:#8b6938; }
+.dialogue-safety,.assistant-emergency { border-color:#dce1d8; border-radius:10px; background:#edf1eb; }
+.dialogue-safety-icon,.assistant-emergency-icon { background:#fff0ec; color:#a85144; }
+.dialogue-next { background:#103a30; }
+.dialogue-result-card,.dialogue-form-card,.assistant-card { border-color:#dfe2d9; border-radius:11px; background:#fffdf8; box-shadow:0 5px 18px rgb(23 57 47 / 5%); }
+.dialogue-next-link { border-radius:8px; background:#fffdf8; color:#103a30; }
+.dialogue-next-link:hover { background:#edf1eb; border-color:#edf1eb; }
+.cases-page .cases-aside { background:#103a30; }
+.cases-page .cases-aside-topline,.cases-page .cases-aside-mark span { color:#d8bd8a; border-color:#b9975b; }
+.cases-page .cases-aside::after { border-color:rgb(217 196 156 / 20%); }
+.cases-page .cases-button-primary,.invitations-page .invitation-primary,.assistant-button-primary { background:#103a30; border-color:#103a30; }
+.cases-page .cases-button-primary:hover,.invitations-page .invitation-primary:hover,.assistant-button-primary:not(:disabled):hover { background:#0a2d25; }
+.cases-page .cases-eyebrow,.cases-page .cases-section-kicker,.cases-page .cases-state-overline,.trust-page .trust-kicker,.invitations-page .invitation-eyebrow,.assistant-auth-overline { color:#8b6938; }
+.cases-page .cases-button-arrow,.cases-page .cases-bottom-note span,.trust-note svg,.trust-grid svg { color:#8b6938; }
+.trust-page .trust-note { border-color:#a98248; background:#f1eee5; }
+.trust-page .trust-grid article,.cases-page .cases-card,.invitations-page .invitation-card { border-color:#dfe2d9; }
+.invitations-page .invitation-symbol { background:#edf1eb; color:#557064; }
+.invitations-page .invitation-consent input { accent-color:#103a30; }
+.invitations-page .invitation-notice { border-color:#dce1d8; background:#edf1eb; color:#3e574d; }
+.assistant-callout { border-color:#dfe2d9; border-radius:10px; background:#edf1eb; color:#3e574d; }
+.assistant-callout>svg { color:#557064; }
+.assistant-callout strong { color:#17392f; }
+.assistant-callout>a { border-color:#d9ded5; }
+.install-app { position:relative; z-index:10; bottom:auto; left:auto; width:max-content; max-width:calc(100% - 24px); margin:14px auto 20px; display:flex; align-items:center; gap:2px; padding:5px; background:#103a30; color:#fffdf8; border:1px solid #31594c; box-shadow:0 8px 24px rgb(16 58 48 / 20%); border-radius:999px; }
+.install-app button { min-height:42px; font-size:11px; }
+.install-app button:first-child svg { color:#dfc99f; }
+.install-app .install-app__close { border-color:#31594c; }
+.install-dialog-backdrop { background:rgb(10 45 37 / 74%); }
+.install-dialog { border-color:#deddd1; border-radius:14px; background:#faf8f2; color:var(--s-ink); }
+.install-dialog__done { border-radius:8px; background:#103a30; }
+.resolution-map { border-color:#deddd1; border-radius:12px; background:#f0eee6; }
+.resolution-map__eyebrow,.resolution-map__card-top>span { color:#8b6938; }
+.resolution-map__copy { border-color:#d5c7a9; border-radius:8px; color:#715834; }
+.resolution-map__copy:hover { border-color:#a98248; background:#f5efe3; }
+.resolution-map__card { border-color:#dfe2d9; border-radius:9px; background:#fffdf8; }
+.resolution-map__caveat { border-radius:8px; background:#fff0ec; color:#765c50; }
+.journey .journey-sidebar__kicker,.journey .journey-sidebar__intro h2 em,.journey .journey-sidebar__bottom-icon,.journey .journey-eyebrow,.journey .journey-state--success .journey-eyebrow { color:#d8bd8a; }
+.journey .journey-sidebar__ornament::before,.journey .journey-sidebar__ornament::after { border-color:rgb(217 196 156 / 12%); }
+.journey .journey-eyebrow>span,.journey .journey-actions__hint span { background:#b9975b; }
+.journey .journey-field__required { color:#8b6938; }
+.journey .journey-soft-note,.journey .journey-consent,.journey .journey-login { border-color:#dfe2d9; background:#f0f1eb; }
+.journey .journey-soft-note svg { color:#557064; }
+.journey .journey-success-icon,.journey .journey-state--success .journey-success-icon { background:#edf1eb; color:#557064; }
+.journey button:focus-visible,.journey a:focus-visible,.journey input:focus-visible,.journey textarea:focus-visible,.journey select:focus-visible { outline-color:#a98248; }
+
+@media (max-width:1100px) {
+  .route-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .new-hero__grid { gap:30px; }
+  .new-hero h1 { font-size:clamp(36px,4.4vw,48px); }
+  .new-footer__grid { grid-template-columns:1.2fr .8fr .8fr; }
+  .new-footer__safety { grid-column:1/-1; padding:12px 0 0; border-inline-start:0; border-top:1px solid var(--s-line); }
+}
+@media (max-width:1000px) {
+  .site-header { height:68px; }
+  .header-inner { gap:12px; }
+  .brand-logo-image { width:44px; height:44px; }
+  .nav-links { background:var(--s-paper); }
+  .new-hero__grid { min-height:470px; padding-block:34px 20px; }
+}
+@media (max-width:760px) {
+  .redesign-home .shell { width:min(calc(100% - 34px),560px); }
+  .site-header { height:62px; }
+  .brand-logo-image { width:40px; height:40px; }
+  .brand-wordmark { font-size:18px; }
+  .nav-links { top:62px; }
+  .new-hero::before { top:-250px; left:-245px; width:470px; height:470px; }
+  .new-hero::after { display:none; }
+  .new-hero__grid { grid-template-columns:1fr; gap:17px; min-height:auto; padding-block:24px 13px; }
+  .new-hero__copy { padding:0; }
+  .new-hero__meta { gap:8px; font-size:10px; }
+  .new-hero__descriptor { font-size:14px; }
+  .new-hero__edition { font-size:8px; }
+  .new-hero h1 { margin:13px 0 8px; font-size:clamp(30px,7.7vw,36px); line-height:1.52; }
+  .new-hero__lead { max-width:42em; font-size:13px; line-height:1.95; }
+  .new-hero__actions { margin-top:13px; }
+  .button-coral { width:100%; min-height:47px; }
+  .new-hero__promise { margin-top:9px; font-size:10px; }
+  .new-hero__art { width:100%; aspect-ratio:1.55/1; max-height:225px; border-radius:3px; }
+  .new-hero__art::before { inset:7px; }
+  .new-hero__floor { min-height:29px; gap:9px; font-size:9px; }
+  .routes-section { padding-block:35px 39px; }
+  .routes-heading { display:block; margin-bottom:15px; }
+  .routes-heading h2 { margin-top:8px; font-size:27px; line-height:1.45; }
+  .routes-heading__aside { max-width:unset; margin-top:6px; }
+  .routes-heading__aside p { font-size:12px; line-height:1.8; }
+  .route-grid { gap:9px; }
+  .route-card { min-height:158px; padding:10px 10px 8px; border-radius:8px; }
+  .route-card__icon { width:30px; height:30px; border-radius:7px; }
+  .route-card__number { font-size:8px; }
+  .route-card__label { margin-top:7px; font-size:9px; }
+  .route-card h3 { margin:2px 0 3px; font-size:13px; line-height:1.55; }
+  .route-card p { margin-bottom:5px; font-size:10.5px; line-height:1.7; -webkit-line-clamp:2; }
+  .route-card__link { min-height:27px; padding-top:5px; font-size:9px; }
+  .routes-foot { margin-top:11px; font-size:9px; }
+  .new-footer { padding-top:27px; }
+  .new-footer__grid { grid-template-columns:1fr 1fr; gap:15px 17px; padding-bottom:18px; }
+  .new-footer__brand,.new-footer__safety { grid-column:1/-1; }
+  .new-footer__safety { padding-top:10px; }
+  .new-footer__base { min-height:44px; flex-wrap:wrap; justify-content:flex-start; gap:3px 11px; padding-block:9px; line-height:1.7; }
+  .new-footer__base>span:last-child { text-align:right; }
+}
+@media (max-width:370px) {
+  .redesign-home .shell { width:calc(100% - 28px); }
+  .new-hero__grid { padding-top:21px; }
+  .new-hero h1 { font-size:29px; }
+  .route-grid { gap:7px; }
+  .route-card { min-height:154px; padding-inline:8px; }
+  .route-card h3 { font-size:12px; }
+  .route-card p { font-size:10px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  html { scroll-behavior:auto; }
+  *,*::before,*::after { animation-duration:.01ms!important; transition-duration:.01ms!important; }
+}

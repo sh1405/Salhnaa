@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;450;500;550;600;650;700&family=Katibeh&family=Noto+Kufi+Arabic:wght@400;500;600;700;800&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap');
 
 :root {
-  --s-ink: #1b1a35;
+  --s-ink: #103a30;
   --s-ink-soft: #292841;
   --s-blue: #4656e8;
-  --s-coral: #f57561;
+  --s-coral: #a98248;
   --s-citron: #f1ce62;
-  --s-paper: #f7f5f0;
+  --s-paper: #f6f3eb;
   --s-white: #fffefa;
   --s-lilac: #eeedfa;
   --s-muted: #777585;
@@ -26,7 +26,8 @@ button, input, textarea, select { font-family: inherit; }
 .site-header { z-index: 50; height: 76px; background: rgb(247 245 240 / 96%); border-bottom: 1px solid rgb(27 26 53 / 10%); color: var(--s-ink); backdrop-filter: blur(16px); }
 .header-inner { height: 100%; }
 .brand { gap: 10px; color: var(--s-ink); }
-.brand-logo-image { width: 62px; height: 62px; display: block; flex: 0 0 auto; object-fit: contain; border: 1px solid var(--s-line); border-radius: 8px; background: var(--s-paper); box-shadow: 0 3px 10px rgb(27 26 53 / 6%); }
+.brand-logo-image { width: 54px; height: 54px; display: block; flex: 0 0 auto; object-fit: contain; border: 1px solid var(--s-line); border-radius: 8px; background: var(--s-paper); box-shadow: 0 3px 10px rgb(27 26 53 / 6%); }
+.brand-wordmark { display: block; color: var(--s-ink); font: 800 22px/1.15 var(--s-display); letter-spacing: -.02em; white-space: nowrap; }
 .brand-mark { width: 45px; height: 45px; display: grid; place-items: center; border: 1px solid rgb(70 86 232 / 18%); background: #fffefa; border-radius: 14px 5px 14px 5px; box-shadow: 0 4px 14px rgb(27 26 53 / 7%); }
 .brand-mark svg { width: 36px; height: 36px; }
 .brand-type strong { color: var(--s-ink); font: 800 25px/1.15 var(--s-display); letter-spacing: -.04em; }

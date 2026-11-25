@@ -81,6 +81,7 @@ const createOAuthHttpClient = (): AxiosInstance =>
   axios.create({
     baseURL: ENV.oAuthServerUrl,
     timeout: AXIOS_TIMEOUT_MS,
+    adapter: "fetch",
   });
 
 class SDKServer {
