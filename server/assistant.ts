@@ -1,7 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { getCloudflareBindings, getWorkersAI } from "../cloudflare/runtime";
-import { invokeLLM } from "./_core/llm";
+import { getWorkersAI } from "../cloudflare/runtime";
 import { protectedProcedure, router } from "./_core/trpc";
 
 // This is an instance-local, short-term limit, not a distributed quota. Failed
@@ -104,34 +103,14 @@ export const assistantRouter = router({
           required: ["description", "interpretation", "possibilities"],
           additionalProperties: false,
         };
-        let content: string;
         const workerAI = getWorkersAI();
-        if (workerAI) {
-          const result = await withTimeout(workerAI.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
-            messages,
-            max_tokens: 900,
-            response_format: { type: "json_schema", json_schema: schema },
-          }));
-          content = workerAiText(result).trim();
-        } else if (getCloudflareBindings()) {
-          // Never send dispute text to the legacy provider from a Worker context.
-          throw new Error("Workers AI binding is unavailable");
-        } else {
-          const response = await withTimeout(invokeLLM({
-            model: "gpt-6-luna",
-            reasoning: { effort: "none" },
-            maxTokens: 900,
-            messages,
-            response_format: {
-              type: "json_schema",
-              json_schema: { name: "organized_draft", strict: true, schema },
-            },
-          }));
-          if ("error" in response || !Array.isArray(response.choices)) throw new Error("Invalid model response");
-          const choice = response.choices[0];
-          if (!choice || choice.finish_reason === "length") throw new Error("Incomplete model response");
-          content = completionText(choice.message?.content).trim();
-        }
+        if (!workerAI) throw new Error("Free Workers AI binding is unavailable");
+        const result = await withTimeout(workerAI.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
+          messages,
+          max_tokens: 900,
+          response_format: { type: "json_schema", json_schema: schema },
+        }));
+        const content = workerAiText(result).trim();
         if (!content) throw new Error("Empty model response");
         const parsed = responseSchema.parse(JSON.parse(content));
         return {
