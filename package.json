@@ -14,6 +14,8 @@
     "db:migrate": "drizzle-kit migrate",
     "dev:static": "vite --host 0.0.0.0 --port ${PORT:-3000} --strictPort",
     "build:static": "vite build",
+    "build:cloudflare": "pnpm run build:static",
+    "deploy:cloudflare": "wrangler deploy",
     "build:worker": "vite build && wrangler deploy --dry-run --outdir=dist/worker",
     "dev:worker": "vite build && wrangler dev --local --port 8787"
   },
