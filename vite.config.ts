@@ -172,6 +172,8 @@ const plugins = [vitePluginPublicPlatformConfig(), react(), tailwindcss(), jsxLo
 
 export default defineConfig({
   plugins,
+  // GitHub Pages serves this repository under /Salhnaa/; ordinary hosts use /.
+  base: process.env.GITHUB_ACTIONS === "true" ? "/Salhnaa/" : "/",
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),

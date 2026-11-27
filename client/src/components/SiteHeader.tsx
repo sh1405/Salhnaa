@@ -8,7 +8,7 @@ import { navigateToLogin } from "@/const";
 export function Brand({ light = false }: { light?: boolean }) {
   return (
     <Link href="/" className={`brand ${light ? "brand-light" : ""}`} aria-label="صالِحنا — الصفحة الرئيسية">
-      <img className="brand-logo-image" src="/salihna-logo-forest-transparent.webp" alt="" />
+      <img className="brand-logo-image" src={`${import.meta.env.BASE_URL}salihna-logo-forest-transparent.webp`} alt="" />
       <span className="brand-wordmark" aria-hidden="true">صالِحنا</span>
     </Link>
   );
@@ -44,8 +44,8 @@ export default function SiteHeader() {
       <div className="header-inner shell">
         <Brand />
         <nav className={`nav-links ${open ? "nav-open" : ""}`} aria-label="التنقل الرئيسي">
-          <a href="/" onClick={close} className={location === "/" ? "active" : ""}>الرئيسية</a>
-          <a href="/trust" onClick={close} className={location === "/trust" ? "active" : ""}>الثقة والسلامة</a>
+          <Link href="/" onClick={close} className={location === "/" ? "active" : ""}>الرئيسية</Link>
+          <Link href="/trust" onClick={close} className={location === "/trust" ? "active" : ""}>الثقة والسلامة</Link>
           {isAuthenticated && <Link href="/invitations" onClick={close} className={location === "/invitations" ? "active" : ""}>الدعوات</Link>}
           <span className="mobile-nav-actions">
             {isAuthenticated ? <>
