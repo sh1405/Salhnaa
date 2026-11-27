@@ -67,7 +67,8 @@ async function oauthCallback(request: Request, env: WorkerEnv): Promise<Response
       name: userInfo.name || "",
       expiresInMs: SESSION_LIFETIME_MS,
     });
-    const returnTo = /^\/invite\/[A-Za-z0-9_-]{43}$/.test(stateData.returnTo ?? "") ? stateData.returnTo! : "/";
+    const safeReturnTo = stateData.returnTo ?? "";
+    const returnTo = /^\/invite\/[A-Za-z0-9_-]{43}$/.test(safeReturnTo) || /^\/journey(?:\/[1-9][0-9]{0,9})?$/.test(safeReturnTo) ? safeReturnTo : "/";
     const headers = new Headers({ Location: new URL(returnTo, url.origin).toString() });
     headers.append("Set-Cookie", `${OAUTH_STATE_COOKIE}=; Path=/; Max-Age=0; Secure; SameSite=None`);
     headers.append("Set-Cookie", `${COOKIE_NAME}=${session}; Path=/; Max-Age=${Math.floor(SESSION_LIFETIME_MS / 1000)}; HttpOnly; Secure; SameSite=None`);

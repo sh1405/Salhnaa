@@ -372,7 +372,7 @@ export default function Journey() {
       } else {
         try { sessionStorage.removeItem(storageKey); } catch { /* Login does not depend on optional storage. */ }
       }
-      startLogin();
+      startLogin(caseId ? `/journey/${caseId}` : "/journey");
     } catch {
       setError("تعذّر بدء تسجيل الدخول أو حفظ النسخة المؤقتة. تحقّق من إعدادات المتصفح وحاول مجددًا.");
     }
@@ -425,6 +425,8 @@ export default function Journey() {
           <div className="journey-state"><CircleHelp size={32} /><h1>تعذّر فتح هذا الملف</h1><p>قد يكون الملف غير متاح أو لا تملك صلاحية الوصول إليه.</p><Link className="journey-button journey-button--primary" href="/cases">العودة إلى ملفاتي <ArrowLeft size={17} /></Link></div>
         ) : caseId && !isAuthenticated ? (
           <div className="journey-state"><LockKeyhole size={32} /><h1>سجّل دخولك لفتح الملف</h1><p>الملفات مرتبطة بالحساب الذي أنشأها. بعد تسجيل الدخول ستعود إلى الصفحة الرئيسية؛ افتح رابط الملف مرة أخرى.</p>{error && <p className="journey-error" role="alert">{error}</p>}<button className="journey-button journey-button--primary" onClick={handleLogin} type="button">تسجيل الدخول <ArrowLeft size={17} /></button></div>
+        ) : !caseId && !isAuthenticated && !auth.isLoading ? (
+          <div className="journey-state"><LockKeyhole size={32} /><span className="journey-eyebrow">الخطوة الأولى</span><h1>ابدأ بتسجيل الدخول</h1><p>أنشئ ملفًا مرتبطًا بحسابك لتتمكن من الرجوع إليه واستقبال دعوات الأطراف في صندوق الوارد والصادر. بعد الدخول ستعود مباشرة إلى رحلة صحيفة الود.</p>{error && <p className="journey-error" role="alert">{error}</p>}<button className="journey-button journey-button--primary" onClick={handleLogin} type="button">تسجيل الدخول <ArrowLeft size={17} /></button><p className="journey-field__hint">لن تُطلب منك بيانات الخلاف قبل تسجيل الدخول. يمكنك استخدام ملفاتك والدعوات بعد المصادقة.</p></div>
         ) : notEditable ? (
           <div className="journey-state"><FileText size={32} /><h1>هذا الملف غير متاح للتعديل هنا</h1><p>يمكنك العودة إلى قائمة ملفاتك للاطلاع على حالته.</p><Link className="journey-button journey-button--primary" href="/cases">العودة إلى ملفاتي <ArrowLeft size={17} /></Link></div>
         ) : saved ? (

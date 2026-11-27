@@ -20,7 +20,7 @@ export const startLogin = (returnTo = "/") => {
 
   const nonce = crypto.randomUUID();
   document.cookie = `${OAUTH_STATE_COOKIE}=${nonce}; Path=/; Max-Age=600; SameSite=None; Secure`;
-  const safeReturnTo = /^\/invite\/[A-Za-z0-9_-]{43}$/.test(returnTo) ? returnTo : "/";
+  const safeReturnTo = /^\/invite\/[A-Za-z0-9_-]{43}$/.test(returnTo) || /^\/journey(?:\/[1-9][0-9]{0,9})?$/.test(returnTo) ? returnTo : "/";
   const state = encodeOAuthState({ redirectUri, nonce, returnTo: safeReturnTo });
 
   const url = new URL(`${oauthPortalUrl}/app-auth`);
