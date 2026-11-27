@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS "emailCredentials" (
+  "userId" INTEGER NOT NULL PRIMARY KEY,
+  "emailNormalized" TEXT NOT NULL UNIQUE,
+  "passwordHash" TEXT NOT NULL,
+  "createdAt" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE
+);

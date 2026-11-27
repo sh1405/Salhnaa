@@ -68,7 +68,7 @@ async function oauthCallback(request: Request, env: WorkerEnv): Promise<Response
       expiresInMs: SESSION_LIFETIME_MS,
     });
     const safeReturnTo = stateData.returnTo ?? "";
-    const returnTo = /^\/invite\/[A-Za-z0-9_-]{43}$/.test(safeReturnTo) || /^\/journey(?:\/[1-9][0-9]{0,9})?$/.test(safeReturnTo) ? safeReturnTo : "/";
+    const returnTo = /^\/invite\/[A-Za-z0-9_-]{43}$/.test(safeReturnTo) || /^\/journey(?:\/[1-9][0-9]{0,9})?$/.test(safeReturnTo) || ["/cases", "/invitations", "/assistant", "/dialogue"].includes(safeReturnTo) ? safeReturnTo : "/";
     const headers = new Headers({ Location: new URL(returnTo, url.origin).toString() });
     headers.append("Set-Cookie", `${OAUTH_STATE_COOKIE}=; Path=/; Max-Age=0; Secure; SameSite=None`);
     headers.append("Set-Cookie", `${COOKIE_NAME}=${session}; Path=/; Max-Age=${Math.floor(SESSION_LIFETIME_MS / 1000)}; HttpOnly; Secure; SameSite=None`);
@@ -103,6 +103,14 @@ async function handle(request: Request, env: WorkerEnv): Promise<Response> {
       createContext: async ({ req, resHeaders }) => {
         const reqCompat = requestLike(req);
         const resCompat = {
+          cookie(name: string, value: string, options: { path?: string; maxAge?: number; httpOnly?: boolean; secure?: boolean; sameSite?: string }) {
+            const parts = [`${name}=${encodeURIComponent(value)}`, `Path=${options.path ?? "/"}`];
+            if (typeof options.maxAge === "number") parts.push(`Max-Age=${Math.floor(options.maxAge / 1000)}`);
+            if (options.httpOnly) parts.push("HttpOnly");
+            if (options.secure) parts.push("Secure");
+            if (options.sameSite) parts.push(`SameSite=${options.sameSite === "none" ? "None" : options.sameSite}`);
+            resHeaders.append("Set-Cookie", parts.join("; "));
+          },
           clearCookie(name: string) {
             resHeaders.append("Set-Cookie", `${name}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None`);
           },

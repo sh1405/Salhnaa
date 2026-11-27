@@ -15,7 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { startLogin } from "@/const";
+import { navigateToLogin } from "@/const";
 import { trpc } from "@/lib/trpc";
 import "./Cases.css";
 
@@ -100,7 +100,7 @@ export default function Cases() {
   const handleLogin = () => {
     setLoginError(false);
     try {
-      startLogin();
+      navigateToLogin("/cases");
     } catch {
       setLoginError(true);
     }

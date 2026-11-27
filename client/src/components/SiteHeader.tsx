@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Menu, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { startLogin } from "@/const";
+import { navigateToLogin } from "@/const";
 
 export function Brand({ light = false }: { light?: boolean }) {
   return (
@@ -52,11 +52,11 @@ export default function SiteHeader() {
               <Link href="/cases" onClick={close}>ملفاتي</Link>
               <Link href="/invitations" onClick={close}>صندوق الدعوات</Link>
               <button type="button" onClick={() => void handleLogout()} disabled={logoutPending}>{logoutPending ? "جارٍ الخروج..." : "تسجيل الخروج"}</button>
-            </> : <button className="mobile-login-button" type="button" onClick={() => { close(); startLogin("/journey"); }}>تسجيل الدخول والبدء</button>}
+            </> : <button className="mobile-login-button" type="button" onClick={() => { close(); navigateToLogin("/journey"); }}>تسجيل الدخول أو إنشاء حساب</button>}
           </span>
         </nav>
         <div className="header-actions">
-          {isAuthenticated ? <><Link href="/cases" className="account-link">ملفاتي</Link><Link href="/invitations" className="account-link">الدعوات</Link><button className="account-link logout-link" type="button" onClick={() => void handleLogout()} disabled={logoutPending}>{logoutPending ? "جارٍ الخروج..." : "خروج"}</button></> : <button className="account-link header-login" type="button" onClick={() => startLogin("/journey")}>تسجيل الدخول <span aria-hidden="true">←</span></button>}
+          {isAuthenticated ? <><Link href="/cases" className="account-link">ملفاتي</Link><Link href="/invitations" className="account-link">الدعوات</Link><button className="account-link logout-link" type="button" onClick={() => void handleLogout()} disabled={logoutPending}>{logoutPending ? "جارٍ الخروج..." : "خروج"}</button></> : <button className="account-link header-login" type="button" onClick={() => navigateToLogin("/journey")}>دخول / حساب جديد <span aria-hidden="true">←</span></button>}
         </div>
         <button className="mobile-toggle" aria-label={open ? "إغلاق القائمة" : "فتح القائمة"} aria-expanded={open} onClick={() => setOpen(!open)}>{open ? <X size={23}/> : <Menu size={23}/>}</button>
       </div>

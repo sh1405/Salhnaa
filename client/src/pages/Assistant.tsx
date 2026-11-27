@@ -16,7 +16,7 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { startLogin } from "@/const";
+import { navigateToLogin } from "@/const";
 import { trpc } from "@/lib/trpc";
 import "./Assistant.css";
 
@@ -64,7 +64,7 @@ export default function Assistant() {
   function handleLogin() {
     setLoginError(false);
     try {
-      startLogin();
+      navigateToLogin("/assistant");
     } catch {
       setLoginError(true);
     }

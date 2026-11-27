@@ -27,7 +27,7 @@ import {
   Sparkles,
   type LucideIcon,
 } from "lucide-react";
-import { startLogin } from "@/const";
+import { navigateToLogin } from "@/const";
 import CaseResolutionTools from "@/components/CaseResolutionTools";
 import { trpc } from "@/lib/trpc";
 import "./Journey.css";
@@ -372,7 +372,7 @@ export default function Journey() {
       } else {
         try { sessionStorage.removeItem(storageKey); } catch { /* Login does not depend on optional storage. */ }
       }
-      startLogin(caseId ? `/journey/${caseId}` : "/journey");
+      navigateToLogin(caseId ? `/journey/${caseId}` : "/journey");
     } catch {
       setError("تعذّر بدء تسجيل الدخول أو حفظ النسخة المؤقتة. تحقّق من إعدادات المتصفح وحاول مجددًا.");
     }

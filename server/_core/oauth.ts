@@ -56,8 +56,9 @@ export function registerOAuthRoutes(app: Express) {
       const cookieOptions = getSessionCookieOptions(req);
       res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: SESSION_LIFETIME_MS });
 
-      const returnTo = /^\/invite\/[A-Za-z0-9_-]{43}$/.test(decodeOAuthState(state).returnTo ?? "")
-        ? decodeOAuthState(state).returnTo!
+      const candidateReturnTo = decodeOAuthState(state).returnTo ?? "";
+      const returnTo = /^\/invite\/[A-Za-z0-9_-]{43}$/.test(candidateReturnTo) || /^\/journey(?:\/[1-9][0-9]{0,9})?$/.test(candidateReturnTo) || ["/cases", "/invitations", "/assistant", "/dialogue"].includes(candidateReturnTo)
+        ? candidateReturnTo
         : "/";
       res.redirect(302, returnTo);
     } catch (error) {

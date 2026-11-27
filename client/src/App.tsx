@@ -10,6 +10,7 @@ import Invitations from "@/pages/Invitations";
 import Dialogue from "@/pages/Dialogue";
 import Assistant from "@/pages/Assistant";
 import Trust from "@/pages/Trust";
+import AuthPage from "@/pages/AuthPage";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -17,6 +18,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 function Router() {
   return <Switch>
     <Route path="/" component={Home}/>
+    <Route path="/login" component={AuthPage}/>
     <Route path="/journey/:id" component={Journey}/>
     <Route path="/journey" component={Journey}/>
     <Route path="/cases" component={Cases}/>

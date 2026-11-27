@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useRoute } from "wouter";
 import { ArrowLeft, Bell, Check, Clipboard, Clock3, LoaderCircle, LockKeyhole, MessageCircle, Send, X } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { startLogin } from "@/const";
+import { navigateToLogin } from "@/const";
 import { trpc } from "@/lib/trpc";
 import "./Invitations.css";
 
@@ -157,7 +157,7 @@ export default function Invitations() {
         <h1>دعوة صلح من صالِحنا</h1>
         {previewQuery.isLoading ? <p>جارٍ التحقق من صلاحية الرابط...</p> : previewQuery.isError || !invitation ? <p role="alert">الرابط غير صالح أو انتهت صلاحيته.</p> : <>
           <p>هذه الدعوة لا تكشف ملفًا أو تفاصيل خلاف. سجّل الدخول لعرض الدعوة والرد عليها؛ لا تتم مشاركة أي محتوى تلقائيًا.</p>
-          {invitation.status === "responded" ? <p className="invitation-notice">تم تسجيل رد على هذه الدعوة.</p> : invitation.status === "expired" || invitation.status === "cancelled" ? <p className="invitation-notice">هذه الدعوة لم تعد متاحة.</p> : !isAuthenticated ? <button className="invitation-button invitation-primary" type="button" onClick={() => startLogin(window.location.pathname)}>تسجيل الدخول لمتابعة الدعوة <ArrowLeft size={16} /></button> : invitation.status !== "opened" ? <button className="invitation-button invitation-primary" type="button" onClick={() => void openPublicInvite()} disabled={openMutation.isPending}>{openMutation.isPending ? <LoaderCircle className="invitation-spinner" size={17} /> : <LockKeyhole size={17} />} فتح الدعوة بأمان</button> : <div className="invitation-actions"><button className="invitation-button invitation-primary" type="button" onClick={() => void respond(invitation.id, "accepted", code)} disabled={respondMutation.isPending}><Check size={16} /> قبول الدعوة</button><button className="invitation-button invitation-outline" type="button" onClick={() => void respond(invitation.id, "declined", code)} disabled={respondMutation.isPending}><X size={16} /> رفض الدعوة</button></div>}
+          {invitation.status === "responded" ? <p className="invitation-notice">تم تسجيل رد على هذه الدعوة.</p> : invitation.status === "expired" || invitation.status === "cancelled" ? <p className="invitation-notice">هذه الدعوة لم تعد متاحة.</p> : !isAuthenticated ? <button className="invitation-button invitation-primary" type="button" onClick={() => navigateToLogin(window.location.pathname)}>تسجيل الدخول لمتابعة الدعوة <ArrowLeft size={16} /></button> : invitation.status !== "opened" ? <button className="invitation-button invitation-primary" type="button" onClick={() => void openPublicInvite()} disabled={openMutation.isPending}>{openMutation.isPending ? <LoaderCircle className="invitation-spinner" size={17} /> : <LockKeyhole size={17} />} فتح الدعوة بأمان</button> : <div className="invitation-actions"><button className="invitation-button invitation-primary" type="button" onClick={() => void respond(invitation.id, "accepted", code)} disabled={respondMutation.isPending}><Check size={16} /> قبول الدعوة</button><button className="invitation-button invitation-outline" type="button" onClick={() => void respond(invitation.id, "declined", code)} disabled={respondMutation.isPending}><X size={16} /> رفض الدعوة</button></div>}
         </>}
         {errorMessage && <p className="invitation-error" role="alert">{errorMessage}</p>}
         <p className="invitation-footnote"><LockKeyhole size={14} /> فتح الرابط لا يعني القبول، ولا يشارك ملفًا أو يرسل ردًا خارجيًا.</p>
@@ -166,7 +166,7 @@ export default function Invitations() {
   }
 
   if (loading) return <main className="invitations-page" dir="rtl"><div className="invitations-shell"><p>جارٍ التحقق من الحساب...</p></div></main>;
-  if (!isAuthenticated) return <main className="invitations-page" dir="rtl"><div className="invitations-shell"><section className="invitation-card"><h1>دعوات الصلح</h1><p>سجّل الدخول لعرض الدعوات وإدارتها.</p><button className="invitation-button invitation-primary" type="button" onClick={() => startLogin()}>تسجيل الدخول</button></section></div></main>;
+  if (!isAuthenticated) return <main className="invitations-page" dir="rtl"><div className="invitations-shell"><section className="invitation-card"><h1>دعوات الصلح</h1><p>سجّل الدخول لعرض الدعوات وإدارتها.</p><button className="invitation-button invitation-primary" type="button" onClick={() => navigateToLogin("/invitations")}>تسجيل الدخول</button></section></div></main>;
 
   return <main className="invitations-page" dir="rtl" lang="ar"><div className="invitations-shell">
     <Link className="invitations-back" href="/cases">ملفاتي <ArrowLeft size={16} /></Link>

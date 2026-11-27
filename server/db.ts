@@ -1,10 +1,12 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, User, users } from "../drizzle/schema";
+import { InsertUser, User, emailCredentials, users } from "../drizzle/schema";
 import { fromIso, getCloudflareBindings, getD1Database, toIso } from "../cloudflare/runtime";
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
+let d1EmailSchemaReady = false;
+let mysqlEmailSchemaReady = false;
 
 // Lazily create the existing MySQL connection only in the Manus runtime.
 export async function getDb() {
@@ -123,4 +125,121 @@ export async function getUserByOpenId(openId: string) {
   }
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
   return result.length > 0 ? result[0] : undefined;
+}
+
+async function ensureEmailCredentialsTable(): Promise<void> {
+  const d1 = getD1Database();
+  if (d1) {
+    if (d1EmailSchemaReady) return;
+    await d1.prepare(`CREATE TABLE IF NOT EXISTS "emailCredentials" (
+      "userId" INTEGER NOT NULL PRIMARY KEY,
+      "emailNormalized" TEXT NOT NULL UNIQUE,
+      "passwordHash" TEXT NOT NULL,
+      "createdAt" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE
+    )`).run();
+    d1EmailSchemaReady = true;
+    return;
+  }
+
+  if (mysqlEmailSchemaReady) return;
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  await db.execute(sql.raw(`CREATE TABLE IF NOT EXISTS \`emailCredentials\` (
+    \`userId\` int NOT NULL,
+    \`emailNormalized\` varchar(320) NOT NULL,
+    \`passwordHash\` varchar(255) NOT NULL,
+    \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (\`userId\`),
+    UNIQUE KEY \`emailCredentials_emailNormalized_unique\` (\`emailNormalized\`),
+    CONSTRAINT \`emailCredentials_userId_users_id_fk\` FOREIGN KEY (\`userId\`) REFERENCES \`users\` (\`id\`) ON DELETE CASCADE
+  )`));
+  mysqlEmailSchemaReady = true;
+}
+
+export async function findUserByEmail(emailNormalized: string): Promise<User | undefined> {
+  const d1 = getD1Database();
+  if (d1) {
+    const row = await d1.prepare("SELECT * FROM users WHERE lower(email) = ? LIMIT 1").bind(emailNormalized).first<Record<string, unknown>>();
+    return row ? mapD1User(row) : undefined;
+  }
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const rows = await db.select().from(users).where(sql`LOWER(${users.email}) = ${emailNormalized}`).limit(1);
+  return rows[0];
+}
+
+export async function getEmailCredential(emailNormalized: string): Promise<{ user: User; passwordHash: string } | undefined> {
+  await ensureEmailCredentialsTable();
+  const d1 = getD1Database();
+  if (d1) {
+    const row = await d1.prepare(`SELECT u.*, c.passwordHash AS credentialPasswordHash
+      FROM emailCredentials c JOIN users u ON u.id = c.userId
+      WHERE c.emailNormalized = ? LIMIT 1`).bind(emailNormalized).first<Record<string, unknown>>();
+    return row ? { user: mapD1User(row), passwordHash: String(row.credentialPasswordHash) } : undefined;
+  }
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const rows = await db.select({ user: users, passwordHash: emailCredentials.passwordHash })
+    .from(emailCredentials)
+    .innerJoin(users, eq(emailCredentials.userId, users.id))
+    .where(eq(emailCredentials.emailNormalized, emailNormalized))
+    .limit(1);
+  return rows[0];
+}
+
+function isUniqueConflict(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return /unique|duplicate|constraint/i.test(message);
+}
+
+export async function createEmailAccount(input: {
+  openId: string;
+  name: string;
+  emailNormalized: string;
+  passwordHash: string;
+}): Promise<User> {
+  await ensureEmailCredentialsTable();
+  if (await findUserByEmail(input.emailNormalized)) throw new Error("EMAIL_ALREADY_EXISTS");
+
+  await upsertUser({
+    openId: input.openId,
+    name: input.name,
+    email: input.emailNormalized,
+    loginMethod: "email",
+    lastSignedIn: new Date(),
+  });
+  const user = await getUserByOpenId(input.openId);
+  if (!user) throw new Error("New email account could not be loaded");
+
+  try {
+    const d1 = getD1Database();
+    if (d1) {
+      await d1.prepare("INSERT INTO emailCredentials (userId, emailNormalized, passwordHash) VALUES (?, ?, ?)")
+        .bind(user.id, input.emailNormalized, input.passwordHash)
+        .run();
+    } else {
+      const db = await getDb();
+      if (!db) throw new Error("Database is not available");
+      await db.insert(emailCredentials).values({
+        userId: user.id,
+        emailNormalized: input.emailNormalized,
+        passwordHash: input.passwordHash,
+      });
+    }
+    return user;
+  } catch (error) {
+    try {
+      const d1 = getD1Database();
+      if (d1) await d1.prepare("DELETE FROM users WHERE id = ? AND openId = ?").bind(user.id, input.openId).run();
+      else {
+        const db = await getDb();
+        await db?.delete(users).where(eq(users.openId, input.openId));
+      }
+    } catch (cleanupError) {
+      console.error("[Auth] Could not clean up an incomplete email account", cleanupError);
+    }
+    if (isUniqueConflict(error)) throw new Error("EMAIL_ALREADY_EXISTS");
+    throw error;
+  }
 }

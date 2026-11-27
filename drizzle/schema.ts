@@ -27,6 +27,14 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
+/** Password credentials are kept apart from the public user profile. */
+export const emailCredentials = mysqlTable("emailCredentials", {
+  userId: int("userId").primaryKey().references(() => users.id, { onDelete: "cascade" }),
+  emailNormalized: varchar("emailNormalized", { length: 320 }).notNull().unique(),
+  passwordHash: varchar("passwordHash", { length: 255 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
 /** Private mediation files. A file is always owned by one authenticated user. */
 export const mediationCases = mysqlTable("mediationCases", {
   id: int("id").autoincrement().primaryKey(),

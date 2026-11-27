@@ -15,7 +15,8 @@
     {
       "binding": "DB",
       "database_name": "salihna",
-      "database_id": "4e4fa63f-1d0e-43c0-8c1b-03017b77835d"
+      "database_id": "4e4fa63f-1d0e-43c0-8c1b-03017b77835d",
+      "migrations_dir": "./migrations"
     }
   ],
   "ai": {
