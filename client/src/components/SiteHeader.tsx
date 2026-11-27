@@ -45,12 +45,18 @@ export default function SiteHeader() {
         <Brand />
         <nav className={`nav-links ${open ? "nav-open" : ""}`} aria-label="التنقل الرئيسي">
           <a href="/" onClick={close} className={location === "/" ? "active" : ""}>الرئيسية</a>
-          <a href="/trust" onClick={close}>الثقة والسلامة</a>
-          <span className="mobile-nav-actions"><Link href="/cases" onClick={close}>ملفاتي</Link>{isAuthenticated && <button type="button" onClick={() => void handleLogout()} disabled={logoutPending}>{logoutPending ? "جارٍ الخروج..." : "تسجيل الخروج"}</button>}</span>
+          <a href="/trust" onClick={close} className={location === "/trust" ? "active" : ""}>الثقة والسلامة</a>
+          {isAuthenticated && <Link href="/invitations" onClick={close} className={location === "/invitations" ? "active" : ""}>الدعوات</Link>}
+          <span className="mobile-nav-actions">
+            {isAuthenticated ? <>
+              <Link href="/cases" onClick={close}>ملفاتي</Link>
+              <Link href="/invitations" onClick={close}>صندوق الدعوات</Link>
+              <button type="button" onClick={() => void handleLogout()} disabled={logoutPending}>{logoutPending ? "جارٍ الخروج..." : "تسجيل الخروج"}</button>
+            </> : <button className="mobile-login-button" type="button" onClick={() => { close(); startLogin("/journey"); }}>تسجيل الدخول والبدء</button>}
+          </span>
         </nav>
         <div className="header-actions">
-          {isAuthenticated ? <Link href="/cases" className="account-link">ملفاتي</Link> : <button className="account-link" onClick={() => startLogin()}>تسجيل الدخول</button>}
-          {isAuthenticated && <button className="account-link logout-link" type="button" onClick={() => void handleLogout()} disabled={logoutPending}>{logoutPending ? "جارٍ الخروج..." : "خروج"}</button>}
+          {isAuthenticated ? <><Link href="/cases" className="account-link">ملفاتي</Link><Link href="/invitations" className="account-link">الدعوات</Link><button className="account-link logout-link" type="button" onClick={() => void handleLogout()} disabled={logoutPending}>{logoutPending ? "جارٍ الخروج..." : "خروج"}</button></> : <button className="account-link header-login" type="button" onClick={() => startLogin("/journey")}>تسجيل الدخول <span aria-hidden="true">←</span></button>}
         </div>
         <button className="mobile-toggle" aria-label={open ? "إغلاق القائمة" : "فتح القائمة"} aria-expanded={open} onClick={() => setOpen(!open)}>{open ? <X size={23}/> : <Menu size={23}/>}</button>
       </div>

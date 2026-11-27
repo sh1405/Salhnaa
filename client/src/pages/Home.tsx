@@ -6,6 +6,7 @@ import {
   CircleDot,
   Compass,
   Earth,
+  FileText,
   GitMerge,
   Layers3,
   LockKeyhole,
@@ -36,7 +37,8 @@ export default function Home() {
             <h1 id="home-title">ابدأ بفهم الخلاف.<em>ثم اختر ما يصلحه.</em></h1>
             <p className="new-hero__lead">مساحة عملية ترتّب روايتك، وتكشف ما يهمّك، وتساعدك على التفكير في خطوة تفاهم قابلة للنقاش — دون أن تتكلم نيابةً عنك.</p>
             <div className="new-hero__actions">
-              <a href="#paths" className="button button-coral">اختر نوع الخلاف <ArrowLeft size={18} /></a>
+              <Link href="/journey" className="button button-coral">ابدأ رحلة الصلح <ArrowLeft size={18} /></Link>
+              <a href="#paths" className="home-secondary-link">استكشف مسارات الخلاف</a>
             </div>
             <div className="new-hero__promise"><LockKeyhole size={15} /><span>إجاباتك لك؛ لا تُشارك تلقائيًا ولا تُرسل دعوة إلى الطرف الآخر.</span></div>
           </div>
@@ -46,6 +48,17 @@ export default function Home() {
           </div>
         </div>
         <div className="new-hero__floor shell"><span>وضوحٌ قبل القرار</span><span className="new-hero__rule" /><span>ثمانية مسارات، اختر الأقرب</span></div>
+      </section>
+
+      <section className="journey-preview" aria-label="مراحل رحلة الصلح">
+        <div className="shell journey-preview__inner">
+          <div className="journey-preview__intro"><span>رحلة واضحة، بلا استعجال</span><strong>من ترتيب الفكرة إلى خطوة ممكنة</strong></div>
+          <div className="journey-preview__step"><span className="journey-preview__icon"><LockKeyhole size={17} /></span><div><small>الخطوة ١</small><strong>دخول آمن</strong></div></div>
+          <span className="journey-preview__connector" aria-hidden="true" />
+          <div className="journey-preview__step"><span className="journey-preview__icon"><FileText size={17} /></span><div><small>الخطوة ٢</small><strong>صحيفة الود</strong></div></div>
+          <span className="journey-preview__connector" aria-hidden="true" />
+          <div className="journey-preview__step"><span className="journey-preview__icon"><GitMerge size={17} /></span><div><small>الخطوة ٣</small><strong>اختر المتابعة</strong></div></div>
+        </div>
       </section>
 
       <section id="paths" className="routes-section" aria-labelledby="routes-title">
