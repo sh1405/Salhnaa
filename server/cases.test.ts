@@ -111,20 +111,15 @@ describe("cases protected procedures", () => {
     expect(store.rows).toHaveLength(kinds.length + 1);
   });
 
-  it("requires non-empty textual facts for safe create and update", async () => {
+  it("allows optional narrative facts while validating any supplied response data", async () => {
     const api = caller(1).cases;
-    const { id } = await api.create(base);
-    for (const responses of [
-      null, undefined, {}, { other: "تفاصيل فقط" }, { facts: "" }, { facts: " \t\n " }, { facts: "\u00a0" },
-      { facts: null }, { facts: 42 }, { facts: false }, { facts: undefined },
-    ]) {
-      await expect(api.create({ ...base, responses } as typeof base)).rejects.toMatchObject({ code: "BAD_REQUEST" });
-      await expect(api.update({ id, ...base, responses, status: "draft" } as typeof base & { id: number; status: "draft" })).rejects.toMatchObject({ code: "BAD_REQUEST" });
-      expect((await api.get({ id })).responses).toEqual(base.responses);
+    const { id } = await api.create({ ...base, responses: {} });
+    expect((await api.get({ id })).responses).toEqual({});
+    await expect(api.update({ id, ...base, status: "draft", responses: { facts: "  وصف اختياري  " } })).resolves.toEqual({ success: true });
+    expect((await api.get({ id })).responses.facts).toBe("  وصف اختياري  ");
+    for (const responses of [null, undefined, { facts: null }, { facts: 42 }, { facts: false }]) {
+      await expect(api.update({ id, ...base, responses, status: "draft" } as never)).rejects.toMatchObject({ code: "BAD_REQUEST" });
     }
-    await expect(api.update({ id, ...base, status: "draft", responses: { facts: "  وصف حقيقي للخلاف  " } })).resolves.toEqual({ success: true });
-    expect((await api.get({ id })).responses.facts).toBe("  وصف حقيقي للخلاف  ");
-    expect(store.rows).toHaveLength(1);
   });
 
   it("automatically pauses non-safe files and never stores their response details", async () => {
@@ -138,7 +133,7 @@ describe("cases protected procedures", () => {
       await expect(api.update({ id, ...base, safety, status: "paused" })).rejects.toMatchObject({ code: "BAD_REQUEST" });
       await expect(api.update({ id, ...base, safety, responses: {}, status: "paused" })).resolves.toEqual({ success: true });
       expect((await api.get({ id })).responses).toEqual({});
-      await expect(api.update({ id, ...base, responses: {}, status: "draft" })).rejects.toMatchObject({ code: "BAD_REQUEST" });
+      await expect(api.update({ id, ...base, safety, responses: {}, status: "draft" })).rejects.toMatchObject({ code: "BAD_REQUEST" });
       expect(await api.get({ id })).toMatchObject({ safety, status: "paused", responses: {} });
       await expect(api.update({ id, ...base, status: "draft" })).resolves.toEqual({ success: true });
       expect(await api.get({ id })).toMatchObject({ safety: "safe", status: "draft", responses: base.responses });

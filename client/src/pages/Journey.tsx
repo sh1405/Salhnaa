@@ -28,6 +28,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { startLogin } from "@/const";
+import CaseResolutionTools from "@/components/CaseResolutionTools";
 import { trpc } from "@/lib/trpc";
 import "./Journey.css";
 
@@ -83,11 +84,12 @@ const procedureOptions = [
 
 function questionsFor(kind: Kind | "", step: number, responses: Responses): Question[] {
   if (step === 3) return [{
-    key: "facts", label: "ما الذي حدث من وجهة نظرك؟", hint: "اكتب وصفًا موجزًا لما تعرفه، دون أسماء أو بيانات تعريفية. هذه روايتك وليست حكمًا على الوقائع.", placeholder: "يمكنك البدء بما حدث ومتى بدأت المشكلة بصورة عامة...", required: true,
+    key: "facts", label: "ما الذي حدث من وجهة نظرك؟", hint: "اكتب وصفًا موجزًا لما تعرفه، دون أسماء أو بيانات تعريفية. هذه روايتك وليست حكمًا على الوقائع؛ الإجابة اختيارية.", placeholder: "يمكنك البدء بما حدث ومتى بدأت المشكلة بصورة عامة...",
   },
   { key: "shared_facts", label: "ما الجانب الذي قد تتفقون عليه حتى الآن؟", hint: "إن لم يظهر بعد، اتركه فارغًا. لا يلزم أن تتفق الروايات كي تبدأ بتوضيح ما تعرفه.", placeholder: "مثلًا: بداية التعامل أو وجود اختلاف حول موضوع معين...", depth: "explore" },
   { key: "disputed_issue", label: "ما السؤال الأساسي الذي ما زال بينكم بلا حسم؟", hint: "حوّل الخلاف إلى مسألة قابلة للنقاش، لا إلى حكم على الأشخاص.", placeholder: "مثلًا: كيف يُستكمل الالتزام أو تُنظّم العلاقة؟", depth: "explore" }];
   if (step === 4) {
+    const coreCause: Question = { key: "core_cause", label: "ما السبب الجوهري أو الحاجة غير الملبّاة خلف الخلاف؟", hint: "قد يكون وراء الموقف احتياج أو توقع أو سوء فهم. أجب بقدر ما ترتاح، ويمكنك تركه فارغًا.", placeholder: "ما الذي تعتقد أنه يغذي الخلاف؟" };
     const representation: Question = {
       key: "representation", label: "بأي صفة تتحدث هنا؟", hint: "وجودك ضمن مجموعة لا يعني أنك مفوّض للحديث باسمها.", type: "select",
       options: [{ value: "self", label: "أتحدث عن نفسي" }, { value: "representative", label: "أمثل آخرين" }, { value: "unsure", label: "لم تتحدد الصفة بعد" }],
@@ -96,14 +98,14 @@ function questionsFor(kind: Kind | "", step: number, responses: Responses): Ques
     const process: Question = { key: "procedure", label: "هل توجد مهلة أو إجراءات قائمة قد تؤثر في هذا الخلاف؟", type: "select", options: procedureOptions };
     const processDetail: Question = { key: "procedure_details", label: "ما الذي ينبغي أخذه في الاعتبار بشأنها؟", hint: "اذكر المهلة أو نوع الإجراء بصورة عامة، دون إرفاق مستندات.", placeholder: "اكتب ما تعرفه، إن رغبت..." };
     switch (kind) {
-      case "individual": return [{ key: "relationship", label: "ما طبيعة العلاقة أو التعامل بين الأطراف؟", hint: "يكفي وصف عام؛ لا حاجة إلى ذكر أسماء.", placeholder: "مثلًا: علاقة شخصية أو مالية..." }, { key: "interaction_context", label: "ما نوع المسألة التي تحتاج إلى ترتيب؟", type: "select", options: [{ value: "financial", label: "التزام أو تعامل مالي" }, { value: "property", label: "ممتلكات أو انتفاع مشترك" }, { value: "relationship", label: "تواصل أو علاقة شخصية" }, { value: "other", label: "مسألة أخرى" }] }];
-      case "family": return [{ key: "relationship", label: "ما طبيعة العلاقة أو الروابط التي تأثرت بالخلاف؟", hint: "يمكنك وصفها باختصار دون تحديد هويات الأشخاص.", placeholder: "صف العلاقة أو ما يهم الحفاظ عليه..." }, { key: "family_priority", label: "ما الذي تأمل حمايته أو الحفاظ عليه في العلاقة؟", placeholder: "مثلًا: التواصل المحترم أو استقرار الترتيبات...", depth: "explore" }];
-      case "community": return [representation, ...(responses.representation === "representative" ? [authorization] : []), { key: "community_context", label: "هل توجد اعتبارات مجتمعية تود الإشارة إليها؟", hint: "اذكر السياق أو العادات ذات الصلة دون افتراض أنها تحل محل الحقوق أو الأنظمة.", placeholder: "تفصيل عام، إن رغبت..." }, { key: "community_voice", label: "من الفئات أو الأصوات التي يلزم سماعها قبل أي تفاهم؟", hint: "فكّر في شمول المشاركين واحترام من سيتأثر بالقرار، دون ذكر أسماء.", placeholder: "صف فئات عامة أو وجهات نظر قد تكون غائبة...", depth: "explore" }];
-      case "business": return [{ key: "business_context", label: "ما طبيعة العلاقة أو الالتزام التجاري محل الخلاف؟", hint: "صِفها بشكل عام دون بيانات مالية حساسة أو مستندات.", placeholder: "مثلًا: شراكة أو توريد أو تقديم خدمة..." }, { key: "business_impact", label: "ما الأثر العملي الذي يحتاج إلى معالجة أولًا؟", type: "select", options: [{ value: "continuity", label: "استمرار العمل أو التوريد" }, { value: "payment", label: "المدفوعات أو الالتزامات" }, { value: "scope", label: "نطاق العمل أو جودته" }, { value: "relationship", label: "استمرار العلاقة التجارية" }, { value: "other", label: "أثر آخر" }] }, process, ...(responses.procedure === "yes" ? [processDetail] : [])];
-      case "workplace": return [{ key: "workplace_context", label: "ما السياق المهني للخلاف؟", hint: "صف طبيعة العلاقة أو أثر الخلاف في العمل دون تسمية أشخاص.", placeholder: "تفصيل عام عن بيئة العمل..." }, { key: "workplace_impact", label: "ما الجانب العملي الذي تأثر أكثر؟", type: "select", options: [{ value: "responsibilities", label: "توزيع المسؤوليات" }, { value: "communication", label: "التواصل أو التعاون" }, { value: "workflow", label: "سير العمل أو الجدول" }, { value: "recognition", label: "توقعات الدور أو التقدير" }, { value: "other", label: "جانب آخر" }] }, process, ...(responses.procedure === "yes" ? [processDetail] : [])];
-      case "organization": return [{ key: "organization_context", label: "ما طبيعة العلاقة بين الجهات أو الوحدات المعنية؟", hint: "تحدث بشكل عام دون أسماء جهات أو تفاصيل سرية.", placeholder: "مثلًا: تعاون أو اختصاصات أو التزام مشترك..." }, representation, ...(responses.representation === "representative" ? [authorization] : [])];
-      case "multi": return [{ key: "parties_context", label: "كيف تتداخل الأطراف أو المصالح؟", hint: "صف المجموعات بصورة عامة دون ذكر أسماء أو افتراض اتفاقها.", placeholder: "مثلًا: عدة مجموعات لها مصالح مختلفة..." }, representation, ...(responses.representation === "representative" ? [authorization] : [])];
-      case "international": return [{ key: "cross_border", label: "ما الدول أو السياقات الأخرى ذات الصلة؟", hint: "اكتفِ بذكر الدول أو وصف عام، دون عناوين أو مستندات.", placeholder: "اذكر الدول ذات الصلة إن عُرفت..." }, process, ...(responses.procedure === "yes" ? [processDetail] : [])];
+      case "individual": return [coreCause, { key: "relationship", label: "ما طبيعة العلاقة أو التعامل بين الأطراف؟", hint: "يكفي وصف عام؛ لا حاجة إلى ذكر أسماء.", placeholder: "مثلًا: علاقة شخصية أو مالية..." }, { key: "interaction_context", label: "ما نوع المسألة التي تحتاج إلى ترتيب؟", type: "select", options: [{ value: "financial", label: "التزام أو تعامل مالي" }, { value: "property", label: "ممتلكات أو انتفاع مشترك" }, { value: "relationship", label: "تواصل أو علاقة شخصية" }, { value: "other", label: "مسألة أخرى" }] }];
+      case "family": return [coreCause, { key: "relationship", label: "ما طبيعة العلاقة أو الروابط التي تأثرت بالخلاف؟", hint: "يمكنك وصفها باختصار دون تحديد هويات الأشخاص.", placeholder: "صف العلاقة أو ما يهم الحفاظ عليه..." }, { key: "family_priority", label: "ما الذي تأمل حمايته أو الحفاظ عليه في العلاقة؟", placeholder: "مثلًا: التواصل المحترم أو استقرار الترتيبات...", depth: "explore" }];
+      case "community": return [coreCause, representation, ...(responses.representation === "representative" ? [authorization] : []), { key: "community_context", label: "هل توجد اعتبارات مجتمعية تود الإشارة إليها؟", hint: "اذكر السياق أو العادات ذات الصلة دون افتراض أنها تحل محل الحقوق أو الأنظمة.", placeholder: "تفصيل عام، إن رغبت..." }, { key: "community_voice", label: "من الفئات أو الأصوات التي يلزم سماعها قبل أي تفاهم؟", hint: "فكّر في شمول المشاركين واحترام من سيتأثر بالقرار، دون ذكر أسماء.", placeholder: "صف فئات عامة أو وجهات نظر قد تكون غائبة...", depth: "explore" }];
+      case "business": return [coreCause, { key: "business_context", label: "ما طبيعة العلاقة أو الالتزام التجاري محل الخلاف؟", hint: "صِفها بشكل عام دون بيانات مالية حساسة أو مستندات.", placeholder: "مثلًا: شراكة أو توريد أو تقديم خدمة..." }, { key: "business_impact", label: "ما الأثر العملي الذي يحتاج إلى معالجة أولًا؟", type: "select", options: [{ value: "continuity", label: "استمرار العمل أو التوريد" }, { value: "payment", label: "المدفوعات أو الالتزامات" }, { value: "scope", label: "نطاق العمل أو جودته" }, { value: "relationship", label: "استمرار العلاقة التجارية" }, { value: "other", label: "أثر آخر" }] }, process, ...(responses.procedure === "yes" ? [processDetail] : [])];
+      case "workplace": return [coreCause, { key: "workplace_context", label: "ما السياق المهني للخلاف؟", hint: "صف طبيعة العلاقة أو أثر الخلاف في العمل دون تسمية أشخاص.", placeholder: "تفصيل عام عن بيئة العمل..." }, { key: "workplace_impact", label: "ما الجانب العملي الذي تأثر أكثر؟", type: "select", options: [{ value: "responsibilities", label: "توزيع المسؤوليات" }, { value: "communication", label: "التواصل أو التعاون" }, { value: "workflow", label: "سير العمل أو الجدول" }, { value: "recognition", label: "توقعات الدور أو التقدير" }, { value: "other", label: "جانب آخر" }] }, process, ...(responses.procedure === "yes" ? [processDetail] : [])];
+      case "organization": return [coreCause, { key: "organization_context", label: "ما طبيعة العلاقة بين الجهات أو الوحدات المعنية؟", hint: "تحدث بشكل عام دون أسماء جهات أو تفاصيل سرية.", placeholder: "مثلًا: تعاون أو اختصاصات أو التزام مشترك..." }, representation, ...(responses.representation === "representative" ? [authorization] : [])];
+      case "multi": return [coreCause, { key: "parties_context", label: "كيف تتداخل الأطراف أو المصالح؟", hint: "صف المجموعات بصورة عامة دون ذكر أسماء أو افتراض اتفاقها.", placeholder: "مثلًا: عدة مجموعات لها مصالح مختلفة..." }, representation, ...(responses.representation === "representative" ? [authorization] : [])];
+      case "international": return [coreCause, { key: "cross_border", label: "ما الدول أو السياقات الأخرى ذات الصلة؟", hint: "اكتفِ بذكر الدول أو وصف عام، دون عناوين أو مستندات.", placeholder: "اذكر الدول ذات الصلة إن عُرفت..." }, process, ...(responses.procedure === "yes" ? [processDetail] : [])];
       default: return [];
     }
   }
@@ -115,6 +117,7 @@ function questionsFor(kind: Kind | "", step: number, responses: Responses): Ques
   if (step === 6) return [
     { key: "interests", label: "ما الأمور الأهم بالنسبة لك؟", hint: "فكّر في الاحتياجات أو المصالح وراء طلبك.", placeholder: "مثلًا: وضوح الالتزامات، الاحترام، أو الاستقرار..." },
     { key: "concerns", label: "هل هناك مخاوف أو عوائق تود مراعاتها؟", placeholder: "ما الذي قد يجعل التقدم صعبًا؟" },
+    { key: "sacrifices", label: "ما التنازل أو التضحية المعقولة التي قد تقدمها لإتمام الصلح؟", hint: "لا تكتب وعدًا أو التزامًا لا ترغب به؛ إجابتك اختيارية وقابلة للمراجعة.", placeholder: "ما الذي تستطيع تقديمه دون الإضرار بحقوقك أو سلامتك؟" },
     { key: "process_needs", label: "ما الذي يجعل الحوار مريحًا ومنصفًا لك؟", hint: "يمكن التفكير في الترتيب، الوقت، اللغة، أو طريقة المشاركة. لا يضمن هذا الخيار توفير تسهيلات بعينها.", placeholder: "أي احتياج إجرائي ترغب في توضيحه...", depth: "explore" },
   ];
   if (step === 7) return [
@@ -217,6 +220,7 @@ export default function Journey() {
   const [exploreOpen, setExploreOpen] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
+  const [savedCaseId, setSavedCaseId] = useState<number | null>(null);
   const [mapCopyStatus, setMapCopyStatus] = useState<"idle" | "success" | "error">("idle");
   const [invitationCopyStatus, setInvitationCopyStatus] = useState<"idle" | "success" | "error">("idle");
   const [storageCleanupError, setStorageCleanupError] = useState(false);
@@ -339,10 +343,8 @@ export default function Journey() {
   }
 
   function next() {
-    if (step === 0 && !kind) return setError("اختر المسار الأقرب إلى طبيعة الخلاف للمتابعة.");
+
     if (step === 1 && safety !== "safe") return setError("اختر إجابة عن السلامة أولًا.");
-    if (step === 2 && country.trim().length < 2) return setError("يرجى كتابة اسم الدولة بصورة واضحة.");
-    if (step === 3 && !responses.facts?.trim()) return setError("أضف وصفًا موجزًا من وجهة نظرك قبل المتابعة.");
     goTo(Math.min(step + 1, 8));
   }
 
@@ -358,6 +360,7 @@ export default function Journey() {
       const value = responses[question.key]?.trim();
       if (value) filtered[question.key] = value;
     }
+    for (const [key, value] of Object.entries(responses)) if (key.startsWith("meta_") && value) filtered[key] = value;
     return filtered;
   }
 
@@ -379,12 +382,12 @@ export default function Journey() {
     setError("");
     if (!isAuthenticated) return setError("سجّل الدخول أولًا لحفظ الملف في حسابك.");
     if (!consent) return setError("يرجى تأكيد موافقتك على حفظ الملف قبل المتابعة.");
-    if (!kind || safety !== "safe" || country.trim().length < 2 || !responses.facts?.trim()) return setError("تحقّق من المسار والسلامة والدولة ووصف الخلاف قبل الحفظ.");
+    if (safety !== "safe") return setError("يلزم تأكيد السلامة قبل حفظ ملف يتضمن تفاصيل الخلاف.");
     const filteredResponses = activeResponses();
     if (new TextEncoder().encode(JSON.stringify(filteredResponses)).length > 60000) return setError("الإجابات طويلة جدًا للحفظ. يرجى اختصار بعضها ثم المحاولة مجددًا.");
     let savedId: number;
     try {
-      const data = { kind, safety: "safe" as const, country: country.trim(), responses: filteredResponses };
+      const data = { kind: kind || "individual", safety: "safe" as const, country: country.trim() || "غير محدد", responses: filteredResponses };
       if (caseId) {
         await updateCase.mutateAsync({ id: caseId, ...data, status: loadedStatus });
         savedId = caseId;
@@ -402,6 +405,7 @@ export default function Journey() {
       utils.cases.get.invalidate({ id: savedId }, { refetchType: "none" }),
     ]);
     try { sessionStorage.removeItem(storageKey); } catch { setStorageCleanupError(true); }
+    setSavedCaseId(savedId);
     setSaved(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -424,7 +428,7 @@ export default function Journey() {
         ) : notEditable ? (
           <div className="journey-state"><FileText size={32} /><h1>هذا الملف غير متاح للتعديل هنا</h1><p>يمكنك العودة إلى قائمة ملفاتك للاطلاع على حالته.</p><Link className="journey-button journey-button--primary" href="/cases">العودة إلى ملفاتي <ArrowLeft size={17} /></Link></div>
         ) : saved ? (
-          <div className="journey-state journey-state--success"><span className="journey-success-icon"><CheckCircle2 size={32} /></span><span className="journey-eyebrow">خطوة موفقة</span><h1>تم حفظ ملفك</h1><p>{caseId ? "حُفظت تعديلاتك في حسابك." : "حُفظت مسودتك في حسابك."} لم تُرسل دعوة إلى أي طرف ولم تتم مشاركة الملف عند الحفظ.</p>{storageCleanupError && <p className="journey-error" role="alert">تعذّر مسح النسخة المؤقتة من المتصفح؛ يرجى مسح بيانات الموقع على هذا الجهاز.</p>}<Link className="journey-button journey-button--primary" href="/cases">الذهاب إلى ملفاتي <ArrowLeft size={17} /></Link></div>
+          <div className="journey-state journey-state--success"><span className="journey-success-icon"><CheckCircle2 size={32} /></span><span className="journey-eyebrow">خطوة موفقة</span><h1>تم حفظ ملفك</h1><p>{caseId ? "حُفظت تعديلاتك في حسابك." : "حُفظت مسودتك في حسابك."} لم تُرسل دعوة إلى أي طرف ولم تتم مشاركة الملف عند الحفظ.</p>{storageCleanupError && <p className="journey-error" role="alert">تعذّر مسح النسخة المؤقتة من المتصفح؛ يرجى مسح بيانات الموقع على هذا الجهاز.</p>}{savedCaseId && <CaseResolutionTools caseId={savedCaseId} />}<Link className="journey-button journey-button--primary" href="/cases">الذهاب إلى ملفاتي <ArrowLeft size={17} /></Link></div>
         ) : (
           <div className="journey-layout">
             <aside className="journey-sidebar" aria-label="مراحل الرحلة">
@@ -458,8 +462,8 @@ export default function Journey() {
                     {step === 0 && <div className="journey-soft-note"><ShieldCheck size={18} /><span>هذه نواة تأسيسية؛ تجنّب إدخال بيانات حساسة قبل اكتمال المراجعة الأمنية والقانونية. <Link href="/trust">اقرأ عن الثقة والسلامة</Link>.</span></div>}
                     {step === 0 && <><div className="journey-kind-grid" role="group" aria-label="اختر نوع المسار">{kinds.map(({ id, title, description, Icon }) => <button type="button" aria-pressed={kind === id} key={id} className={`journey-kind ${kind === id ? "is-selected" : ""}`} onClick={() => { setKind(id); setError(""); }}><span className="journey-kind__icon"><Icon size={21} strokeWidth={1.6} /></span><span className="journey-kind__copy"><strong>{title}</strong><small>{description}</small></span><span className="journey-choice-dot">{kind === id && <Check size={12} />}</span></button>)}</div><div className="journey-branch-note"><CircleHelp size={16} /><span>تتغير الأسئلة مع نوع المسار. عند تغييره لا تدخل إجابات الأسئلة غير المنطبقة في المراجعة أو الحفظ؛ تبقى في هذه الجلسة إن عدت إلى مسارها السابق.</span></div></>}
                     {step === 1 && <div className="journey-safety-list" role="group" aria-label="هل تشعر بالأمان للمتابعة؟">{safetyOptions.map(option => <button key={option.value} className={`journey-safety-option ${safety === option.value ? "is-selected" : ""}`} type="button" aria-pressed={safety === option.value} onClick={() => { setSafety(option.value); setError(""); if (option.value !== "safe") { setConsent(false); setNotice(""); setStorageCleanupError(false); try { sessionStorage.removeItem(storageKey); } catch { setStorageCleanupError(true); } } }}><span className="journey-choice-dot">{safety === option.value && <Check size={12} />}</span><span><strong>{option.title}</strong><small>{option.description}</small></span></button>)}<div className="journey-soft-note"><ShieldCheck size={18} /><span>إذا كان هناك تهديد أو إكراه، فقد لا تكون متابعة الوساطة مناسبة الآن.</span></div></div>}
-                    {step === 2 && <div className="journey-fields"><div className="journey-field"><label className="journey-field__label" htmlFor="journey-country">الدولة ذات الصلة بالخلاف <span className="journey-field__required">*</span></label><p className="journey-field__hint">اكتب اسم الدولة أو اختر من الاقتراحات.</p><input id="journey-country" list="journey-countries" value={country} maxLength={80} onChange={event => { setCountry(event.target.value); setError(""); }} placeholder="مثال: السعودية" autoComplete="country-name" /><datalist id="journey-countries">{countries.map(item => <option value={item} key={item} />)}</datalist></div><div className="journey-soft-note"><Globe2 size={18} /><span>تختلف الأنظمة والسياقات من بلد لآخر. هذه الرحلة لا تقدّم استشارة قانونية.</span></div></div>}
-                    {step >= 3 && step <= 7 && <div className="journey-fields">{visibleQuestions.map(question => <QuestionField key={question.key} question={question} value={responses[question.key] || ""} onChange={value => changeResponse(question.key, value)} />)}{hasExploreQuestions && <button className="journey-explore-toggle" type="button" aria-expanded={exploreOpen} onClick={() => setExploreOpen(open => !open)}>{exploreOpen ? "إخفاء الأسئلة الإضافية" : "استكشف بُعدًا إضافيًا — اختياري"}<ChevronDown size={16} /></button>}{step === 4 && <div className="journey-branch-note"><CircleHelp size={16} /><span>تتبدل أسئلة التفويض والإجراءات بحسب إجابتك؛ التفاصيل التابعة لإجابة لم تعد منطبقة لن تدخل المراجعة أو الحفظ، ويمكن استعادتها في هذه الجلسة بالعودة للاختيار السابق.</span></div>}<div className="journey-soft-note"><LockKeyhole size={18} /><span>يرجى تجنّب الأسماء وبيانات الهوية والتفاصيل الحساسة أو المستندات. الأسئلة غير المعلّمة بنجمة اختيارية.</span></div></div>}
+                    {step === 2 && <div className="journey-fields"><div className="journey-field"><label className="journey-field__label" htmlFor="journey-country">الدولة ذات الصلة بالخلاف </label><p className="journey-field__hint">اختياري — اكتب اسم الدولة أو اختر من الاقتراحات إن رغبت.</p><input id="journey-country" list="journey-countries" value={country} maxLength={80} onChange={event => { setCountry(event.target.value); setError(""); }} placeholder="مثال: السعودية" autoComplete="country-name" /><datalist id="journey-countries">{countries.map(item => <option value={item} key={item} />)}</datalist></div><div className="journey-soft-note"><Globe2 size={18} /><span>تختلف الأنظمة والسياقات من بلد لآخر. هذه الرحلة لا تقدّم استشارة قانونية.</span></div></div>}
+                    {step >= 3 && step <= 7 && <div className="journey-fields">{visibleQuestions.map(question => <QuestionField key={question.key} question={question} value={responses[question.key] || ""} onChange={value => changeResponse(question.key, value)} />)}{hasExploreQuestions && <button className="journey-explore-toggle" type="button" aria-expanded={exploreOpen} onClick={() => setExploreOpen(open => !open)}>{exploreOpen ? "إخفاء الأسئلة الإضافية" : "استكشف بُعدًا إضافيًا — اختياري"}<ChevronDown size={16} /></button>}{step === 4 && <div className="journey-branch-note"><CircleHelp size={16} /><span>تتبدل أسئلة التفويض والإجراءات بحسب إجابتك؛ التفاصيل التابعة لإجابة لم تعد منطبقة لن تدخل المراجعة أو الحفظ، ويمكن استعادتها في هذه الجلسة بالعودة للاختيار السابق.</span></div>}<div className="journey-soft-note"><LockKeyhole size={18} /><span>يرجى تجنّب الأسماء وبيانات الهوية والتفاصيل الحساسة أو المستندات. الإجابات السردية اختيارية؛ تأكيد السلامة شرط وقائي.</span></div></div>}
                     {step === 8 && <div className="journey-review">
                       <section className="resolution-map" aria-labelledby="resolution-map-title">
                         <div className="resolution-map__header">

@@ -32,14 +32,9 @@ const fields = {
 const idSchema = z.number().int().positive().max(2147483647);
 const emptyResponsesUnlessSafe = (data: { safety: string; responses: Record<string, string> }) =>
   data.safety === "safe" || Object.keys(data.responses).length === 0;
-const factsRequiredWhenSafe = (data: { safety: string; responses: Record<string, string> }) =>
-  data.safety !== "safe" || (Object.prototype.hasOwnProperty.call(data.responses, "facts") && data.responses.facts.trim().length > 0);
 const createSchema = z.object(fields).strict().refine(emptyResponsesUnlessSafe, {
   path: ["responses"],
   message: "Cases that are not marked safe cannot contain responses",
-}).refine(factsRequiredWhenSafe, {
-  path: ["responses", "facts"],
-  message: "Cases marked safe must contain non-empty facts",
 });
 const updateSchema = z.object({
   id: idSchema,
@@ -51,9 +46,6 @@ const updateSchema = z.object({
 }).refine(emptyResponsesUnlessSafe, {
   path: ["responses"],
   message: "Cases that are not marked safe cannot contain responses",
-}).refine(factsRequiredWhenSafe, {
-  path: ["responses", "facts"],
-  message: "Cases marked safe must contain non-empty facts",
 });
 
 function toClient(row: MediationCase) {

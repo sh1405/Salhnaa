@@ -20,7 +20,7 @@ function mapInvitationDates<T extends Record<string, unknown>>(row: T): T {
 type InvitationStatus = "pending_delivery" | "delivered_inbox" | "opened" | "responded" | "cancelled" | "expired";
 type InvitationResponse = "accepted" | "declined" | null;
 type InboxInvitation = { id: number; caseId: number; status: InvitationStatus; response: InvitationResponse; createdAt: Date; expiresAt: Date; openedAt: Date | null; senderName: string | null };
-type SentInvitation = { id: number; status: InvitationStatus; response: InvitationResponse; createdAt: Date; expiresAt: Date; recipientUserId: number | null };
+type SentInvitation = { id: number; caseId: number; status: InvitationStatus; response: InvitationResponse; createdAt: Date; expiresAt: Date; recipientUserId: number | null };
 type FullInvitation = { id: number; caseId: number; senderUserId: number; recipientUserId: number | null; tokenHash?: string; status: InvitationStatus; response: InvitationResponse; expiresAt: Date; senderName?: string | null; createdAt?: Date; openedAt?: Date | null; respondedAt?: Date | null };
 
 export async function findUserByPhone(phoneE164: string) {
@@ -116,13 +116,14 @@ export async function listInbox(userId: number) {
 export async function listSent(userId: number) {
   const d1 = getD1Database();
   if (d1) {
-    const { results } = await d1.prepare("SELECT id, status, response, createdAt, expiresAt, recipientUserId FROM mediationInvitations WHERE senderUserId = ? ORDER BY createdAt DESC")
+    const { results } = await d1.prepare("SELECT id, caseId, status, response, createdAt, expiresAt, recipientUserId FROM mediationInvitations WHERE senderUserId = ? ORDER BY createdAt DESC")
       .bind(userId).all<Record<string, unknown>>();
     return results.map(row => mapInvitationDates(row) as unknown as SentInvitation);
   }
   const db = await requireDb();
   return db.select({
     id: mediationInvitations.id,
+    caseId: mediationInvitations.caseId,
     status: mediationInvitations.status,
     response: mediationInvitations.response,
     createdAt: mediationInvitations.createdAt,
