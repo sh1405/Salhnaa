@@ -44,7 +44,7 @@ export default function Home() {
           </div>
 
           <div className="new-hero__art" aria-label="عمل فني تجريدي يصوّر مسارين يتّسع بينهما جسر مشترك">
-            <img src={`${import.meta.env.BASE_URL}salihna-hero-art.webp`} alt="" />
+            <img src="https://salihna-r3mkuywg.manus.space/manus-storage/async-images/Qps6IonCzfBghiwIjTuKT2/image-1.webp" alt="" />
           </div>
         </div>
         <div className="new-hero__floor shell"><span>وضوحٌ قبل القرار</span><span className="new-hero__rule" /><span>ثمانية مسارات، اختر الأقرب</span></div>

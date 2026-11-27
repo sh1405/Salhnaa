@@ -10,7 +10,8 @@ export function safeReturnPath(path: string): string {
 }
 
 export function loginHref(returnTo = "/journey"): string {
-  return `/login?next=${encodeURIComponent(safeReturnPath(returnTo))}`;
+  const base = import.meta.env.BASE_URL === "/" ? "" : import.meta.env.BASE_URL.replace(/\/$/, "");
+  return `${base}/login?next=${encodeURIComponent(safeReturnPath(returnTo))}`;
 }
 
 export function navigateToLogin(returnTo?: string): void {

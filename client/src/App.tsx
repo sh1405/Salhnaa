@@ -32,5 +32,6 @@ function AppRoutes() {
   </Switch>;
 }
 export default function App() {
-  return <ErrorBoundary><ThemeProvider defaultTheme="light"><TooltipProvider><SiteHeader/><Router base={import.meta.env.BASE_URL}><AppRoutes/></Router><InstallApp/><Toaster/></TooltipProvider></ThemeProvider></ErrorBoundary>;
+  const routeBase = import.meta.env.BASE_URL === "/" ? "/" : import.meta.env.BASE_URL.replace(/\/$/, "");
+  return <ErrorBoundary><ThemeProvider defaultTheme="light"><TooltipProvider><SiteHeader/><Router base={routeBase}><AppRoutes/></Router><InstallApp/><Toaster/></TooltipProvider></ThemeProvider></ErrorBoundary>;
 }
