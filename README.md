@@ -13,3 +13,4 @@ Start with the Webdev skill's default-template guide. Platform login, storage, p
 
 Platform configuration is readable and editable through `webdev.config`. Default settings are initial values, not enforced constraints. The agent may modify the files, commands and configuration or follow the flexible guide for another stack.
  
+ 
